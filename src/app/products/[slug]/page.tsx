@@ -94,7 +94,6 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             <img
               src={product.images[0]}
               alt={product.title}
-              fill
               style={{ objectFit: "cover" }}
               className="rounded-lg"
             />
