@@ -4,6 +4,7 @@ import Link from "next/link"
 import { NavigationMenu, NavigationMenuList, NavigationMenuLink, NavigationMenuItem, NavigationMenuTrigger, NavigationMenuContent } from "@/components/ui/navigation-menu"
 import { Home, Focus, ShoppingCart, Contact, Mountain, Menu } from "lucide-react"
 import { siteConfig } from "@/config/site"
+import { ModeToggle } from "@/components/mode-toggle"
 const navigation = [
     { href: "/", label: "Нүүр", icon: Home },
     // { href: "#", label: "Features", icon: Focus },
@@ -47,10 +48,12 @@ export default function Navigation() {
                                 ))}
                             </nav>
                         </div>
-                        <div className="border-t px-6 py-4">
+                        <div className="flex border-t px-6 py-4 space-x-4">
                         <Link href={actionButton.href}>
-                <Button>{actionButton.label}</Button>
-                </Link>                        
+                <Button>{actionButton.label}</Button> 
+                
+                </Link>      
+                <ModeToggle/>                  
                 </div>
                     </div>
                 </SheetContent>
@@ -77,10 +80,11 @@ export default function Navigation() {
               
                 </NavigationMenuList>
             </NavigationMenu>
-            <div className="ml-auto">
+            <div className="ml-auto flex space-x-4">
                 <Link href={actionButton.href}>
                 <Button>{actionButton.label}</Button>
                 </Link>
+                <ModeToggle/>   
             </div>
         </header>
     )
