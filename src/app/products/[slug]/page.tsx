@@ -1,10 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
+// import Image from "next/image"
+// import Link from "next/link"
+import products from "@/data/laptops.json"
+// Form from https://ui.shadcn.com/docs/components/form
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Send } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
+import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,66 +21,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 
-// Product interface
-export interface Product {
-  id: string
-  title: string
-  description: string
-  price: number
-  originalPrice: number
-  keyFeatures: string[]
-  images: string[]
-  slug: string
-}
-
-// Mock product data (in a real app, this would come from an API or database)
-const products: Record<string, Product> = {
-  "ultrabook-pro-x1": {
-    id: "1",
-    title: "UltraBook Pro X1",
-    description:
-      "Experience unparalleled performance with the UltraBook Pro X1.",
-    price: 1299.99,
-    originalPrice: 1499.99,
-    keyFeatures: [
-      '15.6" 4K Ultra HD Display',
-      "Intel Core i9 Processor",
-      "32GB DDR4 RAM",
-      "1TB NVMe SSD",
-      "NVIDIA GeForce RTX 3080 Graphics",
-      "Thunderbolt 4, Wi-Fi 6, Bluetooth 5.2",
-    ],
-    images: ["/placeholder.svg?height=600&width=600"],
-    slug: "ultrabook-pro-x1",
-  },
-  "powerlaptop-y2": {
-    id: "2",
-    title: "PowerLaptop Y2",
-    description: "Powerful performance for professionals.",
-    price: 999.99,
-    originalPrice: 1199.99,
-    keyFeatures: [
-      '14" Full HD Display',
-      "Intel Core i7 Processor",
-      "16GB DDR4 RAM",
-      "512GB NVMe SSD",
-      "NVIDIA GeForce RTX 3060 Graphics",
-    ],
-    images: ["https://placekeanu.com/1080"],
-    slug: "powerlaptop-y2",
-  },
-}
-
-// Fetch product data (simulated)
-const fetchProductData = (slug: string): Product | null => {
-  return products[slug] || null
-}
+// Form schema username, phon number, email
+const formSchema = z.object({
+  username: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+  phoneNumber: z.string().min(10, {
+    message: "Phone number must be at least 10 characters.",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+})
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
-  const product = fetchProductData(params.slug)
+  const product = products.find((product) => product.id === params.slug)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
+  const { toast } = useToast()
   const handleRequestPurchase = () => {
     setIsDialogOpen(true)
   }
@@ -85,18 +59,36 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   const savingsAmount = product.originalPrice - product.price
 
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      phoneNumber: "",
+      email: "",
+    },
+  })
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values)
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid gap-8 md:grid-cols-2">
         {/* Product Image */}
         <div className="space-y-4">
           <div className="relative aspect-square">
-            <img
-              src={product.images[0]}
-              alt={product.title}
-              style={{ objectFit: "cover" }}
-              className="rounded-lg"
-            />
+            {/* map images*/}
+            {product.images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={product.title}
+                style={{ objectFit: "cover" }}
+                className="rounded-lg"
+              />
+            ))}
           </div>
         </div>
 
@@ -125,7 +117,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Key Features</h2>
             <ul className="list-inside list-disc space-y-2">
-              {product.keyFeatures.map((feature, index) => (
+              {product.specs.map((feature, index) => (
                 <li key={index}>{feature}</li>
               ))}
             </ul>
@@ -138,23 +130,87 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </div>
         </div>
       </div>
-
-      {/* Purchase Request Dialog */}
+      {/* Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Purchase Request Sent</DialogTitle>
+            <DialogTitle>Request to Purchase</DialogTitle>
             <DialogDescription>
-              Your request to purchase the {product.title} has been sent
-              successfully. Our team will contact you shortly to finalize the
-              purchase.
+              Please fill out the form below to request the purchase of{" "}
+              {product.title}.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="sm:justify-start">
-            <Button asChild>
-              <Link href="/products">View More Products</Link>
-            </Button>
-          </DialogFooter>
+          {/* Form */}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="shadcn" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      This is your public display name.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="1234567890" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Please enter your phone number.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="example@example.com" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Please enter your email address.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                onClick={() => {
+                  toast({
+                    title: "Request submitted for " + product.title + "!",
+                    description:
+                      "Your request has been submitted successfully, " +
+                      form.getValues().username +
+                      ". We will contact you within 72 hours.",
+                  })
+                  setIsDialogOpen(false)
+                }}
+              >
+                Submit
+              </Button>
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                Cancel
+              </Button>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>

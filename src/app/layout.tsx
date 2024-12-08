@@ -1,13 +1,15 @@
 import "@/styles/globals.css"
 
 import type { Metadata, Viewport } from "next"
-import { Inter } from "next/font/google"
+import { Roboto } from "next/font/google"
 
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
+import { Toaster } from "@/components/ui/toaster"
+import  Navigation  from "@/components/Navigation"
 import { ThemeProvider } from "@/components/theme-provider"
 
-const inter = Inter({ subsets: ["latin"] })
+const roboto = Roboto({ weight: ["300"], subsets: ["cyrillic", "latin"] })
 
 interface RootLayoutProps {
   children: React.ReactNode
@@ -70,7 +72,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body
         className={cn(
           "min-h-screen bg-background antialiased",
-          inter.className
+          roboto.className
         )}
       >
         <ThemeProvider
@@ -79,7 +81,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
           enableSystem
           disableTransitionOnChange
         >
+          <Navigation />
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

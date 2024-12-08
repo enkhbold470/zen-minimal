@@ -1,0 +1,33 @@
+[
+  {
+    "id": "1",
+    "title": "UltraBook Pro X1",
+    "description": "Experience unparalleled performance with the UltraBook Pro X1.",
+    "price": 1299.99,
+    "originalPrice": 1499.99,
+    "specs": [
+      "15.6\" 4K Ultra HD Display",
+      "Intel Core i9 Processor",
+      "32GB DDR4 RAM",
+      "1TB NVMe SSD",
+      "NVIDIA GeForce RTX 3080 Graphics",
+      "Thunderbolt 4, Wi-Fi 6, Bluetooth 5.2"
+    ],
+    "images": ["https://placekeanu.com/1080", "https://placekeanu.com/5400"]
+  },
+  {
+    "id": "2",
+    "title": "PowerLaptop Y2",
+    "description": "Powerful performance for professionals.",
+    "price": 999.99,
+    "originalPrice": 1199.99,
+    "specs": [
+      "14\" Full HD Display",
+      "Intel Core i7 Processor",
+      "16GB DDR4 RAM",
+      "512GB NVMe SSD",
+      "NVIDIA GeForce RTX 3060 Graphics"
+    ],
+    "images": ["https://placekeanu.com/10480", "https://placekeanu.com/300"]
+  }
+]

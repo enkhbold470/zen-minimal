@@ -3,17 +3,20 @@ import { SiteConfig } from "@/types"
 import { env } from "@/env.mjs"
 
 export const siteConfig: SiteConfig = {
-  name: "Next Entree",
-  author: "redpangilinan",
+  name: "Зэн Нөтбүүк Дэлгүүр",
+  author: "зэнлаптоп",
   description:
-    "Next.js 14+ starter template with app router, shadcn/ui, typesafe env, icons and configs setup.",
-  keywords: ["Next.js", "React", "Tailwind CSS", "Radix UI", "shadcn/ui"],
+    "Зэн Лаптоп Дэлгүүр - Хамгийн сүүлийн үеийн, шилдэг лаптопуудыг нэг дороос.",
+  keywords: ["Цахим худалдаа", "Лаптопууд", "Технологи", "Онлайн дэлгүүр"],
   url: {
     base: env.NEXT_PUBLIC_APP_URL,
-    author: "https://rdev.pro",
+    author: "https://zenshop.enk.icu",
   },
   links: {
-    github: "https://github.com/redpangilinan/next-entree",
+    github: "https://github.com/enkhbold470",
   },
   ogImage: `${env.NEXT_PUBLIC_APP_URL}/og.jpg`,
+  about:
+    "Зэн Лаптоп Дэлгүүр нь хамгийн сүүлийн үеийн, шилдэг лаптопуудыг санал болгодог онлайн дэлгүүр юм. Бидний зорилго бол хэрэглэгчдэдээ хамгийн чанартай, найдвартай бүтээгдэхүүнийг хүргэх явдал юм.",
+  goal: "Бидний зорилго бол үйлчлүүлэгчдийн хэрэгцээг ойлгож, тэдэнд хамгийн тохирсон лаптопуудыг санал болгох, улмаар Монголын хэрэглэгчдэд технологийн дэвшлийг хүртээмжтэй болгох явдал юм.",
 }

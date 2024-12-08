@@ -11,4 +11,6 @@ export type SiteConfig = {
     github: string
   }
   ogImage: string
+  about: string
+  goal: string
 }
