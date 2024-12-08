@@ -40,7 +40,7 @@ const products = [
 export default function ProductsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold">Our Laptops</h1>
+      <h1 className="mb-8 text-3xl font-bold">Манай Дэлгүүрт</h1>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
           <Card key={product.id} className="flex flex-col">
@@ -68,7 +68,7 @@ export default function ProductsPage() {
                   ))}
                 </div>
                 <span className="ml-2 text-sm text-gray-500">
-                  {product.rating} ({product.reviews} reviews)
+                  {product.rating} ({product.reviews} сэтгэгдэл)
                 </span>
               </div>
               <div className="mb-2 flex items-baseline">
@@ -79,13 +79,13 @@ export default function ProductsPage() {
                   ${product.originalPrice.toFixed(2)}
                 </span>
                 <Badge className="ml-2">
-                  Save ${(product.originalPrice - product.price).toFixed(2)}
+                  Хэмнэлт ${(product.originalPrice - product.price).toFixed(2)}
                 </Badge>
               </div>
             </CardContent>
             <CardFooter className="mt-auto">
               <Button asChild className="w-full">
-                <Link href={`/products/${product.id}`}>View Details</Link>
+                <Link href={`/products/${product.id}`}>Дэлгэрэнгүй</Link>
               </Button>
             </CardFooter>
           </Card>
