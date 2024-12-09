@@ -90,7 +90,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             Authorization:
               "Bearer 4e00dbed66064394ef2adc2698bcb285fa02d13623b2d6a2a19075fcc5497912",
           },
-          body: JSON.stringify(values as any),
+          body: JSON.stringify(values),
         }
       )
 
