@@ -1,4 +1,3 @@
-//src/app/layout.tsx
 import "@/styles/globals.css"
 
 import type { Metadata, Viewport } from "next"
@@ -69,7 +68,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
+      <head>
+        <meta httpEquiv="Content-Security-Policy" />
+      </head>
       <body
         className={cn(
           "min-h-screen bg-background antialiased",
