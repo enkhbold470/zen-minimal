@@ -1,12 +1,11 @@
-import Image from "next/image"
-
+import { siteConfig } from "@/config/site"
 import { Card, CardContent } from "@/components/ui/card"
-import {siteConfig} from "@/config/site"
+
 export default function AboutPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="mb-8 text-3xl font-bold">Тухай</h1>
-      <Card className="grid lg:grid-cols-3 items-center">
+      <Card className="grid items-center lg:grid-cols-3">
         <CardContent className="p-4">
           <div className="relative">
             <img
@@ -17,20 +16,15 @@ export default function AboutPage() {
               className="rounded-full "
             />
           </div>
-          
         </CardContent>
         <CardContent className="p-4">
           <h2 className="mb-4 text-2xl font-bold">{siteConfig.name}</h2>
-          <p>
-            {siteConfig.about}
-          </p>
+          <p>{siteConfig.about}</p>
         </CardContent>
-      
+
         <CardContent className="p-4">
           <h2 className="mb-4 text-2xl font-bold">Зорилт</h2>
-          <p>
-            {siteConfig.goal}
-          </p>
+          <p>{siteConfig.goal}</p>
         </CardContent>
       </Card>
     </div>

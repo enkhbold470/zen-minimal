@@ -33,13 +33,13 @@ import {
 import { Input } from "@/components/ui/input"
 
 const formSchema = z.object({
-  username: z
-    .string()
-    .min(2, { message: "Username must be at least 2 characters." }),
-  phoneNumber: z
-    .string()
-    .min(10, { message: "Phone number must be at least 10 characters." }),
-  email: z.string().email({ message: "Please enter a valid email address." }),
+  username: z.string().min(2, {
+    message: "Хэрэглэгчийн нэр хамгийн багадаа 2 тэмдэгт байх ёстой.",
+  }),
+  phoneNumber: z.string().min(10, {
+    message: "Утасны дугаар хамгийн багадаа 8 тэмдэгт байх ёстой.",
+  }),
+  email: z.string().email({ message: "Зөв и-мэйл хаяг оруулна уу." }),
 })
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
@@ -82,7 +82,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   if (!product) {
     return (
-      <div className="container mx-auto flex justify-center px-4 py-8">
+      <div className="flex animate-pulse items-center justify-center text-2xl">
         Ачааллаж байна...
       </div>
     )
@@ -100,7 +100,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 key={index}
                 src={image.url}
                 alt={product.title}
-                className="rounded-lg object-cover"
+                className="mb-2 h-full w-full rounded-lg object-cover"
               />
             ))}
           </div>

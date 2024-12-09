@@ -31,7 +31,7 @@ export default function ProductsPage() {
   if (products.length === 0)
     return (
       <div className="flex animate-pulse items-center justify-center text-2xl">
-        Loading...
+        Ачааллаж байна...
       </div>
     )
   return (
@@ -41,7 +41,7 @@ export default function ProductsPage() {
         {products.map((product) => (
           <Card key={product.id} className="flex flex-col">
             <CardContent className="p-4">
-              <div className="relative mb-4 aspect-square">
+              <div className="relative mb-4 flex aspect-square items-center">
                 <Image
                   src={product.images[0].url}
                   alt={product.title}
