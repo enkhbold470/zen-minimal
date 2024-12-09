@@ -1,3 +1,4 @@
+//src/app/layout.tsx
 import "@/styles/globals.css"
 
 import type { Metadata, Viewport } from "next"
@@ -6,7 +7,7 @@ import { Roboto } from "next/font/google"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
-import  Navigation  from "@/components/Navigation"
+import Navigation from "@/components/Navigation"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const roboto = Roboto({ weight: ["300"], subsets: ["cyrillic", "latin"] })

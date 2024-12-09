@@ -40,6 +40,7 @@ const formSchema = z.object({
     message: "Утасны дугаар хамгийн багадаа 8 тэмдэгт байх ёстой.",
   }),
   email: z.string().email({ message: "Зөв и-мэйл хаяг оруулна уу." }),
+  laptopChoice: z.string(),
 })
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
@@ -66,18 +67,53 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       username: "",
       phoneNumber: "",
       email: "",
+      laptopChoice: "",
     },
   })
 
   const handleRequestPurchase = () => setIsDialogOpen(true)
   const closeDialog = () => setIsDialogOpen(false)
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    toast({
-      title: `Хүсэлт илгээгдлээ ${product?.title}!`,
-      description: `Баярлалаа, ${values.username}. Бид удахгүй тантай холбогдох болно.`,
-    })
-    closeDialog()
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      values.laptopChoice = product?.title + "?id=" + product?.id || ""
+      // Close the dialog immediately
+      console.log(values)
+
+      // Send POST request to your API endpoint
+      const response = await fetch(
+        `https://llqpdvyjvzhreglgnyzz.supabase.co/functions/v1/purchase-request`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer 4e00dbed66064394ef2adc2698bcb285fa02d13623b2d6a2a19075fcc5497912",
+          },
+          body: JSON.stringify(values as any),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error("Failed to send request.")
+      }
+
+      // Show success toast
+      toast({
+        title: `Хүсэлт илгээгдлээ ${product?.title}!`,
+        description: `Баярлалаа, ${values.username}. Бид удахгүй тантай холбогдох болно.`,
+        variant: "default",
+      })
+      closeDialog()
+    } catch (error) {
+      // Show error toast
+      toast({
+        title: "Алдаа гарлаа!",
+        description: "Хүсэлт илгээх явцад алдаа гарлаа. Дахин оролдоно уу.",
+        variant: "destructive",
+      })
+      console.error(error)
+    }
   }
 
   if (!product) {

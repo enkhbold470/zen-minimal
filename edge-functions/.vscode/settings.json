@@ -1,9 +1,6 @@
 {
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "deno.enablePaths": ["supabase/functions"],
   "deno.lint": true,
-  "deno.enable": true,
   "deno.unstable": [
     "bare-node-builtins",
     "byonm",
@@ -21,5 +18,8 @@
   ],
   "[typescript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "compilerOptions": {
+    "types": ["@types/deno"]
   }
 }
