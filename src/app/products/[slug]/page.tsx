@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import products from "@/data/laptops.json"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Send } from "lucide-react"
@@ -54,7 +55,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       )
 
       const data = await response.json()
-      console.log(data)
+      // console.log(data)
       return data
     }
     fetchProducts().then((data) => setProducts(data.data))
@@ -146,11 +147,14 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         <div className="space-y-4">
           <div className="relative aspect-square">
             {product.images.map((image, index) => (
-              <img
+              <Image
                 key={index}
                 src={image.url}
                 alt={product.title}
+                width="500"
+                height="500"
                 className="mb-2 h-full w-full rounded-lg object-cover"
+                priority={true}
               />
             ))}
           </div>

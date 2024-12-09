@@ -22,7 +22,7 @@ export default function ProductsPage() {
       )
 
       const data = await response.json()
-      console.log(data)
+      // console.log(data)
       return data
     }
     fetchProducts().then((data) => setProducts(data.data))
@@ -47,6 +47,7 @@ export default function ProductsPage() {
                   alt={product.title}
                   width={500}
                   height={500}
+                  priority={true}
                 />
               </div>
               <h2 className="mb-2 text-xl font-semibold">{product.title}</h2>

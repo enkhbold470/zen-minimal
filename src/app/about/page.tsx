@@ -1,3 +1,5 @@
+import Image from "next/image"
+
 import { siteConfig } from "@/config/site"
 import { Card, CardContent } from "@/components/ui/card"
 
@@ -8,7 +10,7 @@ export default function AboutPage() {
       <Card className="grid items-center lg:grid-cols-3">
         <CardContent className="p-4">
           <div className="relative">
-            <img
+            <Image
               src="/android-chrome-512x512.png"
               alt={siteConfig.name}
               width={500}
