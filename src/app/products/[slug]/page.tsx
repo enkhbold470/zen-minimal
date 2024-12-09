@@ -36,7 +36,7 @@ const formSchema = z.object({
   username: z.string().min(2, {
     message: "Хэрэглэгчийн нэр хамгийн багадаа 2 тэмдэгт байх ёстой.",
   }),
-  phoneNumber: z.string().min(10, {
+  phoneNumber: z.string().min(8, {
     message: "Утасны дугаар хамгийн багадаа 8 тэмдэгт байх ёстой.",
   }),
   email: z.string().email({ message: "Зөв и-мэйл хаяг оруулна уу." }),
@@ -45,6 +45,8 @@ const formSchema = z.object({
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
   const [products, setProducts] = useState<Product[]>([])
+  const [isSubscribed, setIsSubscribed] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
     const fetchProducts = async () => {
       const response = await fetch(
@@ -76,23 +78,28 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      setIsLoading(true)
+
       values.laptopChoice = product?.title + "?id=" + product?.id || ""
       // Close the dialog immediately
-      console.log(values)
 
       // Send POST request to your API endpoint
-      const response = await fetch(
-        `https://llqpdvyjvzhreglgnyzz.supabase.co/functions/v1/purchase-request`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer 4e00dbed66064394ef2adc2698bcb285fa02d13623b2d6a2a19075fcc5497912",
-          },
-          body: JSON.stringify(values),
-        }
-      )
+      // const response = await fetch(
+      //   `${process.env.NEXT_PUBLIC_PURCHASE_FUNCTIONS_URL}`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       Authorization: `Bearer ${process.env.PURCHASE_BEARER_TOKEN}`,
+      //     },
+      //     body: JSON.stringify(values),
+      //   }
+      // )
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SHEETS_URL}`, {
+        method: "POST",
+        body: JSON.stringify(values),
+      })
 
       if (!response.ok) {
         throw new Error("Failed to send request.")
@@ -104,16 +111,23 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         description: `Баярлалаа, ${values.username}. Бид удахгүй тантай холбогдох болно.`,
         variant: "default",
       })
-      closeDialog()
+      setIsSubscribed(true)
+      setIsLoading(false)
     } catch (error) {
+      setIsLoading(false)
       // Show error toast
       toast({
         title: "Алдаа гарлаа!",
         description: "Хүсэлт илгээх явцад алдаа гарлаа. Дахин оролдоно уу.",
         variant: "destructive",
       })
-      console.error(error)
+
+      // console.error(error)
     }
+    setTimeout(() => {
+      setIsSubscribed(false)
+      closeDialog()
+    }, 3000)
   }
 
   if (!product) {
@@ -256,8 +270,16 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 )}
               />
               <div className="flex justify-end space-x-2">
-                <Button type="submit">Илгээх</Button>
-                <Button variant="outline" onClick={closeDialog}>
+                <Button variant="default" type="submit">
+                  {isLoading ? (
+                    <h1 className="animate-pulse">Илгээж байна...</h1>
+                  ) : isSubscribed ? (
+                    <h1 className="font-bold text-green-500">Илгээгдсэн!</h1>
+                  ) : (
+                    <h1 className="font-bold">Илгээх</h1>
+                  )}
+                </Button>
+                <Button variant="destructive" onClick={closeDialog}>
                   Цуцлах
                 </Button>
               </div>
