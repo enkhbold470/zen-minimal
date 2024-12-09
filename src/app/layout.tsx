@@ -68,9 +68,6 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <meta httpEquiv="Content-Security-Policy" />
-      </head>
       <body
         className={cn(
           "min-h-screen bg-background antialiased",

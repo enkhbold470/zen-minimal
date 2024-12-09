@@ -51,7 +51,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   useEffect(() => {
     const fetchProducts = async () => {
       const response = await fetch(
-        `http://${env.NEXT_PUBLIC_SERVER_URL}/api/laptops?populate=images`
+        `${env.NEXT_PUBLIC_SERVER_URL}/api/laptops?populate=images`
       )
 
       const data = await response.json()
