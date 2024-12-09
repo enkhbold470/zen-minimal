@@ -1,15 +1,14 @@
 "use client"
 
-import { useState } from "react"
-// import Image from "next/image"
-// import Link from "next/link"
+import { useEffect, useState } from "react"
 import products from "@/data/laptops.json"
-// Form from https://ui.shadcn.com/docs/components/form
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Send } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
+import { env } from "@/env.mjs"
+import { Product } from "@/types/productTypes"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -32,32 +31,33 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-// Form schema username, phon number, email
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-  phoneNumber: z.string().min(10, {
-    message: "Phone number must be at least 10 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
+  username: z
+    .string()
+    .min(2, { message: "Username must be at least 2 characters." }),
+  phoneNumber: z
+    .string()
+    .min(10, { message: "Phone number must be at least 10 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
 })
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
-  const product = products.find((product) => product.id === params.slug)
+  const [products, setProducts] = useState<Product[]>([])
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const response = await fetch(
+        `http://${env.NEXT_PUBLIC_SERVER_URL}/api/laptops?populate=images`
+      )
+
+      const data = await response.json()
+      console.log(data)
+      return data
+    }
+    fetchProducts().then((data) => setProducts(data.data))
+  }, [])
+  const product = products.find((product) => product.id === Number(params.slug))
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { toast } = useToast()
-  const handleRequestPurchase = () => {
-    setIsDialogOpen(true)
-  }
-
-  if (!product) {
-    return <div className="container mx-auto px-4 py-8">Product not found</div>
-  }
-
-  const savingsAmount = product.originalPrice - product.price
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,94 +67,99 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       email: "",
     },
   })
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+
+  const handleRequestPurchase = () => setIsDialogOpen(true)
+  const closeDialog = () => setIsDialogOpen(false)
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    toast({
+      title: `Хүсэлт илгээгдлээ ${product?.title}!`,
+      description: `Баярлалаа, ${values.username}. Бид удахгүй тантай холбогдох болно.`,
+    })
+    closeDialog()
   }
+
+  if (!product) {
+    return (
+      <div className="container mx-auto flex justify-center px-4 py-8">
+        Ачааллаж байна...
+      </div>
+    )
+  }
+
+  const savingsAmount = product.originalPrice - product.price
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid gap-8 md:grid-cols-2">
-        {/* Product Image */}
         <div className="space-y-4">
           <div className="relative aspect-square">
-            {/* map images*/}
             {product.images.map((image, index) => (
               <img
                 key={index}
-                src={image}
+                src={image.url}
                 alt={product.title}
-                style={{ objectFit: "cover" }}
-                className="rounded-lg"
+                className="rounded-lg object-cover"
               />
             ))}
           </div>
         </div>
-
-        {/* Product Details */}
         <div className="space-y-6">
           <h1 className="text-3xl font-bold">{product.title}</h1>
-
-          {/* Pricing */}
-          <div className="flex items-baseline">
-            <span className="text-3xl font-bold">
-              ${product.price.toFixed(2)}
+          <div className="mb-2 flex items-baseline">
+            <span className="text-2xl font-bold">
+              ₮{product.price.toFixed().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
             </span>
             <span className="ml-2 text-sm text-gray-500 line-through">
-              ${product.originalPrice.toFixed(2)}
+              ₮
+              {product.originalPrice
+                .toFixed()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
             </span>
-            <Badge className="ml-2">Save ${savingsAmount.toFixed(2)}</Badge>
+            <Badge variant="destructive" className="ml-2">
+              Хэмнэлт ₮
+              {(product.originalPrice - product.price)
+                .toFixed()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+            </Badge>
           </div>
-
-          {/* Purchase Button */}
           <Button size="lg" className="w-full" onClick={handleRequestPurchase}>
             <Send className="mr-2 h-5 w-5" />
-            Request to Purchase
+            Худалдан авах хүсэлт илгээх
           </Button>
-
-          {/* Key Features */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Key Features</h2>
-            <ul className="list-inside list-disc space-y-2">
-              {product.specs.map((feature, index) => (
-                <li key={index}>{feature}</li>
-              ))}
-            </ul>
+            <ul className="list-inside list-disc space-y-2">{product.specs}</ul>
           </div>
-
-          {/* Product Description */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Description</h2>
             <p>{product.description}</p>
           </div>
         </div>
       </div>
-      {/* Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Request to Purchase</DialogTitle>
+            <DialogTitle>Худалдан авах хүсэлт</DialogTitle>
             <DialogDescription>
-              Please fill out the form below to request the purchase of{" "}
-              {product.title}.
+              Доорх маягтыг бөглөж {product.title} худалдан авах хүсэлтээ
+              илгээнэ үү.
             </DialogDescription>
           </DialogHeader>
-          {/* Form */}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username</FormLabel>
+                    <FormLabel>Нэр, Овог</FormLabel>
                     <FormControl>
-                      <Input placeholder="shadcn" {...field} />
+                      <Input
+                        placeholder="Оюун-Эрдэнэ Лувсаннамсрай"
+                        {...field}
+                      />
                     </FormControl>
-                    <FormDescription>
-                      This is your public display name.
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -164,13 +169,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
+                    <FormLabel>Утасны дугаар</FormLabel>
                     <FormControl>
-                      <Input placeholder="1234567890" {...field} />
+                      <Input placeholder="92120293" {...field} />
                     </FormControl>
-                    <FormDescription>
-                      Please enter your phone number.
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -180,35 +182,20 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>И-мэйл хаяг</FormLabel>
                     <FormControl>
-                      <Input placeholder="example@example.com" {...field} />
+                      <Input placeholder="boldoo@gmail.com" {...field} />
                     </FormControl>
-                    <FormDescription>
-                      Please enter your email address.
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                onClick={() => {
-                  toast({
-                    title: "Request submitted for " + product.title + "!",
-                    description:
-                      "Your request has been submitted successfully, " +
-                      form.getValues().username +
-                      ". We will contact you within 72 hours.",
-                  })
-                  setIsDialogOpen(false)
-                }}
-              >
-                Submit
-              </Button>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
-              </Button>
+              <div className="flex justify-end space-x-2">
+                <Button type="submit">Илгээх</Button>
+                <Button variant="outline" onClick={closeDialog}>
+                  Цуцлах
+                </Button>
+              </div>
             </form>
           </Form>
         </DialogContent>
