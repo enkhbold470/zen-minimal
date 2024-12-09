@@ -1,33 +1,202 @@
-[
-  {
-    "id": "1",
-    "title": "UltraBook Pro X1",
-    "description": "Experience unparalleled performance with the UltraBook Pro X1.",
-    "price": 1299.99,
-    "originalPrice": 1499.99,
-    "specs": [
-      "15.6\" 4K Ultra HD Display",
-      "Intel Core i9 Processor",
-      "32GB DDR4 RAM",
-      "1TB NVMe SSD",
-      "NVIDIA GeForce RTX 3080 Graphics",
-      "Thunderbolt 4, Wi-Fi 6, Bluetooth 5.2"
-    ],
-    "images": ["https://placekeanu.com/1080", "https://placekeanu.com/5400"]
-  },
-  {
-    "id": "2",
-    "title": "PowerLaptop Y2",
-    "description": "Powerful performance for professionals.",
-    "price": 999.99,
-    "originalPrice": 1199.99,
-    "specs": [
-      "14\" Full HD Display",
-      "Intel Core i7 Processor",
-      "16GB DDR4 RAM",
-      "512GB NVMe SSD",
-      "NVIDIA GeForce RTX 3060 Graphics"
-    ],
-    "images": ["https://placekeanu.com/10480", "https://placekeanu.com/300"]
+{
+  "data": [
+    {
+      "id": 4,
+      "documentId": "ua3xwt113plby2913yseobu9",
+      "price": 1299.99,
+      "createdAt": "2024-12-08T13:07:54.528Z",
+      "updatedAt": "2024-12-08T13:07:54.528Z",
+      "publishedAt": "2024-12-08T13:07:55.289Z",
+      "title": "UltraBook Pro X1",
+      "originalPrice": 1499.99,
+      "description": "Experience unparalleled performance with the UltraBook Pro X1.",
+      "specs": "*\"15.6\\\" 4K Ultra HD Display\",\n*\"Intel Core i9 Processor\",\n*\"32GB DDR4 RAM\",\n*\"1TB NVMe SSD\",\n*\"NVIDIA GeForce RTX 3080 Graphics\",\n*\"Thunderbolt 4, Wi-Fi 6, Bluetooth 5.2\"",
+      "images": [
+        {
+          "id": 1,
+          "documentId": "higerbx5ts5yb5il8cdelu0b",
+          "name": "macbookpro2015.png",
+          "alternativeText": null,
+          "caption": null,
+          "width": 1920,
+          "height": 1080,
+          "formats": {
+            "large": {
+              "ext": ".png",
+              "url": "https://res.cloudinary.com/dpyi03dqc/image/upload/v1733470205/laptops/large_macbookpro2015_346d93514c.png",
+              "hash": "large_macbookpro2015_346d93514c",
+              "mime": "image/png",
+              "name": "large_macbookpro2015.png",
+              "path": null,
+              "size": 309.04,
+              "width": 1000,
+              "height": 563,
+              "sizeInBytes": 309040,
+              "provider_metadata": {
+                "public_id": "laptops/large_macbookpro2015_346d93514c",
+                "resource_type": "image"
+              }
+            },
+            "small": {
+              "ext": ".png",
+              "url": "https://res.cloudinary.com/dpyi03dqc/image/upload/v1733470205/laptops/small_macbookpro2015_346d93514c.png",
+              "hash": "small_macbookpro2015_346d93514c",
+              "mime": "image/png",
+              "name": "small_macbookpro2015.png",
+              "path": null,
+              "size": 96.4,
+              "width": 500,
+              "height": 281,
+              "sizeInBytes": 96397,
+              "provider_metadata": {
+                "public_id": "laptops/small_macbookpro2015_346d93514c",
+                "resource_type": "image"
+              }
+            },
+            "medium": {
+              "ext": ".png",
+              "url": "https://res.cloudinary.com/dpyi03dqc/image/upload/v1733470204/laptops/medium_macbookpro2015_346d93514c.png",
+              "hash": "medium_macbookpro2015_346d93514c",
+              "mime": "image/png",
+              "name": "medium_macbookpro2015.png",
+              "path": null,
+              "size": 190.29,
+              "width": 750,
+              "height": 422,
+              "sizeInBytes": 190290,
+              "provider_metadata": {
+                "public_id": "laptops/medium_macbookpro2015_346d93514c",
+                "resource_type": "image"
+              }
+            },
+            "thumbnail": {
+              "ext": ".png",
+              "url": "https://res.cloudinary.com/dpyi03dqc/image/upload/v1733470203/laptops/thumbnail_macbookpro2015_346d93514c.png",
+              "hash": "thumbnail_macbookpro2015_346d93514c",
+              "mime": "image/png",
+              "name": "thumbnail_macbookpro2015.png",
+              "path": null,
+              "size": 30.54,
+              "width": 245,
+              "height": 138,
+              "sizeInBytes": 30535,
+              "provider_metadata": {
+                "public_id": "laptops/thumbnail_macbookpro2015_346d93514c",
+                "resource_type": "image"
+              }
+            }
+          },
+          "hash": "macbookpro2015_346d93514c",
+          "ext": ".png",
+          "mime": "image/png",
+          "size": 214.93,
+          "url": "https://res.cloudinary.com/dpyi03dqc/image/upload/v1733470204/laptops/macbookpro2015_346d93514c.png",
+          "previewUrl": null,
+          "provider": "cloudinary",
+          "provider_metadata": {
+            "public_id": "laptops/macbookpro2015_346d93514c",
+            "resource_type": "image"
+          },
+          "createdAt": "2024-12-06T07:30:06.155Z",
+          "updatedAt": "2024-12-08T13:07:46.102Z",
+          "publishedAt": "2024-12-06T07:30:06.157Z"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "documentId": "qn7l10n367uo0im6r8pleyuk",
+      "price": 2000,
+      "createdAt": "2024-12-08T13:15:49.318Z",
+      "updatedAt": "2024-12-08T13:15:49.318Z",
+      "publishedAt": "2024-12-08T13:15:50.059Z",
+      "title": "Thinkpad",
+      "originalPrice": 2500,
+      "description": "Thinkpad is good",
+      "specs": "*good\n*14inch",
+      "images": [
+        {
+          "id": 2,
+          "documentId": "bzgwgv3ch8gxghl90mzkz3th",
+          "name": "thinkpad.jpg",
+          "alternativeText": null,
+          "caption": null,
+          "width": 894,
+          "height": 641,
+          "formats": {
+            "small": {
+              "ext": ".jpg",
+              "url": "https://res.cloudinary.com/dpyi03dqc/image/upload/v1733663730/laptops/small_71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7.jpg",
+              "hash": "small_71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7",
+              "mime": "image/jpeg",
+              "name": "small_71CUP80TyEL._AC_UF894,1000_QL80_.jpg",
+              "path": null,
+              "size": 25.23,
+              "width": 500,
+              "height": 359,
+              "sizeInBytes": 25230,
+              "provider_metadata": {
+                "public_id": "laptops/small_71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7",
+                "resource_type": "image"
+              }
+            },
+            "medium": {
+              "ext": ".jpg",
+              "url": "https://res.cloudinary.com/dpyi03dqc/image/upload/v1733663730/laptops/medium_71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7.jpg",
+              "hash": "medium_71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7",
+              "mime": "image/jpeg",
+              "name": "medium_71CUP80TyEL._AC_UF894,1000_QL80_.jpg",
+              "path": null,
+              "size": 46.99,
+              "width": 750,
+              "height": 538,
+              "sizeInBytes": 46990,
+              "provider_metadata": {
+                "public_id": "laptops/medium_71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7",
+                "resource_type": "image"
+              }
+            },
+            "thumbnail": {
+              "ext": ".jpg",
+              "url": "https://res.cloudinary.com/dpyi03dqc/image/upload/v1733663730/laptops/thumbnail_71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7.jpg",
+              "hash": "thumbnail_71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7",
+              "mime": "image/jpeg",
+              "name": "thumbnail_71CUP80TyEL._AC_UF894,1000_QL80_.jpg",
+              "path": null,
+              "size": 6.77,
+              "width": 218,
+              "height": 156,
+              "sizeInBytes": 6770,
+              "provider_metadata": {
+                "public_id": "laptops/thumbnail_71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7",
+                "resource_type": "image"
+              }
+            }
+          },
+          "hash": "71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7",
+          "ext": ".jpg",
+          "mime": "image/jpeg",
+          "size": 53.25,
+          "url": "https://res.cloudinary.com/dpyi03dqc/image/upload/v1733663730/laptops/71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7.jpg",
+          "previewUrl": null,
+          "provider": "cloudinary",
+          "provider_metadata": {
+            "public_id": "laptops/71_CUP_80_Ty_EL_AC_UF_894_1000_QL_80_5bfe29aad7",
+            "resource_type": "image"
+          },
+          "createdAt": "2024-12-08T13:15:31.221Z",
+          "updatedAt": "2024-12-08T13:15:46.184Z",
+          "publishedAt": "2024-12-08T13:15:31.223Z"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "page": 1,
+      "pageSize": 25,
+      "pageCount": 1,
+      "total": 2
+    }
   }
-]
+}
