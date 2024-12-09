@@ -5,6 +5,7 @@ import products from "@/data/laptops.json"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Send } from "lucide-react"
 import { useForm } from "react-hook-form"
+import ReactMarkdown from "react-markdown"
 import { z } from "zod"
 
 import { env } from "@/env.mjs"
@@ -128,11 +129,39 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             Худалдан авах хүсэлт илгээх
           </Button>
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Key Features</h2>
-            <ul className="list-inside list-disc space-y-2">{product.specs}</ul>
+            <h2 className="text-xl font-semibold">Үзүүлэлтүүд</h2>
+            <ul className="list-inside list-disc space-y-2">
+              <ReactMarkdown
+                components={{
+                  // Customize h3 (###)
+                  h3: ({ node, ...props }) => (
+                    <h3
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "1.25rem",
+                      }}
+                      {...props}
+                    />
+                  ),
+                  // Customize strong (**)
+                  strong: ({ node, ...props }) => (
+                    <strong
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "1rem",
+                        opacity: 0.7,
+                      }}
+                      {...props}
+                    />
+                  ),
+                }}
+              >
+                {product.specs}
+              </ReactMarkdown>
+            </ul>
           </div>
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Description</h2>
+            <h2 className="text-xl font-semibold">Тайлбар</h2>
             <p>{product.description}</p>
           </div>
         </div>
