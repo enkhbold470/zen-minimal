@@ -2,6 +2,7 @@ import "@/styles/globals.css"
 
 import type { Metadata, Viewport } from "next"
 import { Roboto } from "next/font/google"
+import { Analytics } from "@vercel/analytics/react"
 
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
@@ -82,6 +83,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         >
           <Navigation />
           {children}
+          <Analytics />
           <Toaster />
         </ThemeProvider>
       </body>
