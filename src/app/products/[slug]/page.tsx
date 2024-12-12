@@ -146,17 +146,28 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       <div className="grid gap-8 md:grid-cols-2">
         <div className="space-y-4">
           <div className="relative aspect-square">
-            {product.images.map((image, index) => (
+            {product.images && product.images.length > 0 ? (
+              product.images.map((image, index) => (
+                <Image
+                  key={index}
+                  src={image.url}
+                  alt={product.title}
+                  width="500"
+                  height="500"
+                  className="mb-2 h-full w-full rounded-lg object-cover"
+                  priority={true}
+                />
+              ))
+            ) : (
               <Image
-                key={index}
-                src={image.url}
-                alt={product.title}
+                src="/logo.svg"
+                alt="Default Logo"
                 width="500"
                 height="500"
                 className="mb-2 h-full w-full rounded-lg object-cover"
                 priority={true}
               />
-            ))}
+            )}
           </div>
         </div>
         <div className="space-y-6">

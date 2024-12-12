@@ -43,7 +43,11 @@ export default function ProductsPage() {
             <CardContent className="p-4">
               <div className="relative mb-4 flex aspect-square items-center">
                 <Image
-                  src={product.images[0].url}
+                  src={
+                    product.images?.length > 0
+                      ? product.images[0].url
+                      : "/logo.svg"
+                  }
                   alt={product.title}
                   width={500}
                   height={500}
