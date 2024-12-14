@@ -18,7 +18,7 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       const response = await fetch(
-        `${env.NEXT_PUBLIC_SERVER_URL}/api/laptops?populate=images`
+        `${env.NEXT_PUBLIC_SERVER_URL}/api/laptops?populate=*&randomSort=true`
       )
 
       const data = await response.json()
@@ -39,7 +39,7 @@ export default function ProductsPage() {
       <h1 className="mb-8 text-3xl font-bold">Манай Дэлгүүрт</h1>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
-          <Card key={product.id} className="flex flex-col">
+          <Card key={product?.id} className="flex flex-col">
             <CardContent className="p-4">
               <div className="relative mb-4 flex aspect-square items-center">
                 <Image
