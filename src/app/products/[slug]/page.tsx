@@ -50,9 +50,11 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await fetch(
-        `${env.NEXT_PUBLIC_SERVER_URL}/api/laptops?populate=images`
-      )
+      const response = await fetch(`/api/laptops?populate=images`, {
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
+      })
 
       const data = await response.json()
       // console.log(data)
@@ -152,10 +154,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   key={index}
                   src={image.url}
                   alt={product.title}
-                  width="500"
-                  height="500"
-                  className="mb-2 h-full w-full rounded-lg object-cover"
+                  className="mb-6 rounded-lg object-cover"
                   priority={true}
+                  width={2000}
+                  height={2000}
                 />
               ))
             ) : (
