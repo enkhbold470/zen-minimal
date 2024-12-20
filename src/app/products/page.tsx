@@ -18,7 +18,12 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       const response = await fetch(
-        `${env.NEXT_PUBLIC_SERVER_URL}/api/laptops?populate=*&randomSort=true`
+        `${env.NEXT_PUBLIC_SERVER_URL}/api/laptops?populate=*&randomSort=true`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        }
       )
 
       const data = await response.json()
