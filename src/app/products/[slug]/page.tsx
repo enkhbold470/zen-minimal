@@ -251,10 +251,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   <FormItem>
                     <FormLabel>Нэр, Овог</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Оюун-Эрдэнэ Лувсаннамсрай"
-                        {...field}
-                      />
+                      <Input placeholder="Нэр, Овог" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
