@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -35,9 +38,14 @@ const actionButton = {
 }
 
 export default function Navigation() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const closeSheet = () => {
+    setIsOpen(false)
+  }
   return (
     <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
-      <Sheet>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="lg:hidden">
             <Menu className="h-6 w-6" />
@@ -51,6 +59,7 @@ export default function Navigation() {
                 href="/"
                 className="flex items-center gap-2"
                 prefetch={false}
+                onClick={closeSheet}
               >
                 <Image src="/logo.svg" alt="" width={32} height={32} />
                 <span className="text-lg font-semibold">{siteConfig.name}</span>
@@ -62,6 +71,7 @@ export default function Navigation() {
                     href={item.href}
                     className="flex items-center gap-2 text-lg font-medium text-muted-foreground hover:text-foreground"
                     prefetch={false}
+                    onClick={closeSheet}
                   >
                     <item.icon className="h-6 w-6" />
                     {item.label}

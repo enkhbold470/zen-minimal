@@ -181,7 +181,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     <div className="container mx-auto px-4 py-8">
       <div className="grid gap-8 border-b border-gray-200 pb-8 md:grid-cols-2">
         <div className="space-y-4">
-          <div className="relative aspect-square rounded-lg border border-red-500">
+          <div className="relative aspect-square rounded-lg">
             {/** Show images of the product, if there is no image we will show default logo */}
             <div className="flex flex-col space-y-4">
               {/* Main image */}
