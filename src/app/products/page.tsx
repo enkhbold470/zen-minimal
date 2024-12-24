@@ -96,7 +96,11 @@ export default function ProductsPage() {
               </div>
             </CardContent>
             <CardFooter className="mt-auto">
-              <Button variant="default" asChild className="w-full">
+              <Button
+                variant="default"
+                asChild
+                className="w-full rounded-full bg-blue-500 text-white hover:bg-blue-400"
+              >
                 <Link href={`/products/${product.id}`}>Дэлгэрэнгүй</Link>
               </Button>
             </CardFooter>

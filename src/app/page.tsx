@@ -9,7 +9,7 @@ export default function Home() {
     router.push("/products")
   }, [router])
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex items-center justify-center">
       <h1>Redirecting...</h1>
     </div>
   )

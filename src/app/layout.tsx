@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
+import Footer from "@/components/Footer"
 import Navigation from "@/components/Navigation"
 import { ThemeProvider } from "@/components/theme-provider"
 
@@ -83,6 +84,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         >
           <Navigation />
           {children}
+          <Footer />
           <Analytics />
           <Toaster />
         </ThemeProvider>

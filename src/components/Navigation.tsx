@@ -25,7 +25,7 @@ import { ModeToggle } from "@/components/mode-toggle"
 const navigation = [
   { href: "/", label: "Нүүр", icon: Home },
   // { href: "#", label: "Features", icon: Focus },
-  { href: "/about", label: "Бидний Тухай", icon: ShoppingCart },
+  // { href: "/about", label: "Бидний Тухай", icon: ShoppingCart },
   // { href: "/contact", label: "Contact", icon: Contact },
 ]
 
