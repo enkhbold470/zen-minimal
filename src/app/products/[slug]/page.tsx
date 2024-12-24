@@ -175,7 +175,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     )
   }
 
-  const savingsAmount = product.originalPrice - product.price
+  // const savingsAmount = product.originalPrice - product.price
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -243,28 +243,38 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </div>
         </div>
         {/** Product details */}
-        <div className="space-y-6">
+        <div className=" space-y-6 ">
           <h1 className="text-3xl font-bold">{product.title}</h1>
-          <div className="mb-2 flex items-baseline">
+          <div className="jutify-between mb-2 flex items-center gap-2">
             <span className="text-2xl font-bold">
               ₮{product.price.toFixed().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
             </span>
-            <span className="ml-2 text-sm text-gray-500 line-through">
+            {/* <span className="ml-2 text-sm text-gray-500 line-through">
               ₮
               {product.originalPrice
                 .toFixed()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-            </span>
-            <Badge variant="destructive" className="ml-2">
-              Хэмнэлт ₮
-              {(product.originalPrice - product.price)
-                .toFixed()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-            </Badge>
+            </span> */}
+
+            <Card className="flex items-center gap-2 rounded-3xl p-2 text-sm font-bold">
+              Эсвэл
+              <span>
+                {product.price >= 1_000_000
+                  ? `₮${(product.price / 6 / 1_000_000).toFixed(2)} сая`
+                  : `₮${(product.price / 6 / 1_000).toFixed(0)} мян`}
+                /6 удаа
+              </span>
+              <Image
+                src="/pocketzero.svg"
+                alt="pocketzero logo"
+                width={100}
+                height={100}
+              />
+            </Card>
           </div>
           <Button
             size="lg"
-            className="w-full rounded-full bg-blue-500 text-white hover:bg-blue-400"
+            className="w-full rounded-full bg-blue-500 font-bold text-white hover:bg-blue-400"
             onClick={handleRequestPurchase}
           >
             <Send className="mr-2 h-5 w-5" />
@@ -272,7 +282,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </Button>
           {/** share buttons */}
           <div className="flex space-x-2">
-            <div className="flex items-center">Share:</div>
+            <div className="flex items-center">Хуваалцах:</div>
 
             <FacebookShareButton
               url={window.location.href}
@@ -280,6 +290,15 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             >
               <FacebookIcon size={32} round />
             </FacebookShareButton>
+            <TwitterShareButton
+              url={window.location.href}
+              title={product.title}
+              via="ZenStore"
+              hashtags={["ZenStore", "Laptop"]}
+              related={["ZenStore"]}
+            >
+              <XIcon size={32} round />
+            </TwitterShareButton>
             <WhatsappShareButton
               url={window.location.href}
               title={product.title}
@@ -297,15 +316,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             <LinkedinShareButton url={window.location.href}>
               <LinkedinIcon size={32} round />
             </LinkedinShareButton>
-            <TwitterShareButton
-              url={window.location.href}
-              title={product.title}
-              via="ZenStore"
-              hashtags={["ZenStore", "Laptop"]}
-              related={["ZenStore"]}
-            >
-              <XIcon size={32} round />
-            </TwitterShareButton>
+
             <TelegramShareButton
               url={window.location.href}
               title={product.title}
@@ -318,8 +329,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </div>
 
           {/** product specs */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Үзүүлэлтүүд</h2>
+          <div className="space-y-4 border-t border-gray-200 pt-4">
             <ul className="list-inside list-disc space-y-2">
               <ReactMarkdown
                 components={{
@@ -349,11 +359,6 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 {product.specs}
               </ReactMarkdown>
             </ul>
-          </div>
-          {/** product description */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Тайлбар</h2>
-            <p>{product.description}</p>
           </div>
         </div>
       </div>
@@ -397,22 +402,25 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               </div> */}
               <div className="mb-2 flex items-baseline">
                 <span className="text-2xl font-bold">
-                  ₮
-                  {product.price
-                    .toFixed()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  {product.price >= 1_000_000
+                    ? `₮${(product.price / 1_000_000).toFixed(2)} сая`
+                    : `₮${(product.price / 1_000).toFixed(0)} мян`}{" "}
                 </span>
-                <span className="ml-2 text-sm text-gray-500 line-through">
+
+                {/* <span className="ml-2 text-sm text-gray-500 line-through">
                   ₮
                   {product.originalPrice
                     .toFixed()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                </span>
-                <Badge variant="destructive" className="ml-2">
-                  Хэмнэлт ₮
-                  {(product.originalPrice - product.price)
-                    .toFixed()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </span> */}
+                <Badge variant="destructive" className="ml-2 text-sm font-bold">
+                  <span>
+                    эсвэл {""}
+                    {product.price >= 1_000_000
+                      ? `₮${(product.price / 6 / 1_000_000).toFixed(2)} сая`
+                      : `₮${(product.price / 6 / 1_000).toFixed(0)} мян`}
+                    /6 удаа
+                  </span>
                 </Badge>
               </div>
             </CardContent>

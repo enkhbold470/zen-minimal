@@ -76,22 +76,25 @@ export default function ProductsPage() {
               </div> */}
               <div className="mb-2 flex items-baseline">
                 <span className="text-2xl font-bold">
-                  ₮
-                  {product.price
-                    .toFixed()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  {product.price >= 1_000_000
+                    ? `₮${(product.price / 1_000_000).toFixed(2)} сая`
+                    : `₮${(product.price / 1_000).toFixed(0)} мян`}{" "}
                 </span>
-                <span className="ml-2 text-sm text-gray-500 line-through">
+
+                {/* <span className="ml-2 text-sm text-gray-500 line-through">
                   ₮
                   {product.originalPrice
                     .toFixed()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                </span>
-                <Badge variant="destructive" className="ml-2">
-                  Хэмнэлт ₮
-                  {(product.originalPrice - product.price)
-                    .toFixed()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </span> */}
+                <Badge variant="destructive" className="ml-2 text-sm font-bold">
+                  <span>
+                    эсвэл {""}
+                    {product.price >= 1_000_000
+                      ? `₮${(product.price / 6 / 1_000_000).toFixed(2)} сая`
+                      : `₮${(product.price / 6 / 1_000).toFixed(0)} мян`}
+                    /6 удаа
+                  </span>
                 </Badge>
               </div>
             </CardContent>
