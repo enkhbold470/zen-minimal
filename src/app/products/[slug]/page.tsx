@@ -170,6 +170,16 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 priority={true}
               />
             )}
+            {/** Show video of unboxing, embed youtube link, if there is nothing in product.video we will show nothing*/}
+            {product.video && (
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://www.youtube.com/embed/${product.video.split("v=")[1]}?rel=0&loop=1&color=white`}
+                frameBorder={0}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              ></iframe>
+            )}
           </div>
         </div>
         <div className="space-y-6">

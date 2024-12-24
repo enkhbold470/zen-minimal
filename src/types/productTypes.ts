@@ -57,6 +57,7 @@ export interface Product {
   description: string
   specs: string
   images: ProductImage[]
+  video: string
 }
 
 export interface Pagination {
