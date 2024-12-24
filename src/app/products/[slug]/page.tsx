@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import products from "@/data/laptops.json"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Send } from "lucide-react"
@@ -31,6 +32,7 @@ import { Product } from "@/types/productTypes"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -65,9 +67,13 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const [products, setProducts] = useState<Product[]>([])
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const { toast } = useToast()
+  // Fetch product data
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await fetch(`/api/laptops?populate=images`, {
+      const response = await fetch(`/api/laptops?populate=*&randomSort=true`, {
         headers: {
           "ngrok-skip-browser-warning": "true",
         },
@@ -80,9 +86,18 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     fetchProducts().then((data) => setProducts(data.data))
   }, [])
   const product = products.find((product) => product.id === Number(params.slug))
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const { toast } = useToast()
+  useEffect(() => {
+    if (product) {
+      setSelectedImage(product.images?.[0]?.url || "/logo.svg")
+    }
+  }, [product])
 
+  //Fetch other products
+  const otherProducts = products
+    .filter((p) => p.id !== Number(params.slug))
+    .slice(0, 3)
+
+  // Form validation
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -92,10 +107,11 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       laptopChoice: "",
     },
   })
-
+  // Handle form submission
   const handleRequestPurchase = () => setIsDialogOpen(true)
   const closeDialog = () => setIsDialogOpen(false)
 
+  // Handle form submission
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsLoading(true)
@@ -150,6 +166,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     }, 3000)
   }
 
+  // If product is not found, show loading state
   if (!product) {
     return (
       <div className="flex animate-pulse items-center justify-center text-2xl">
@@ -162,35 +179,58 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-8 border-b border-gray-200 pb-8 md:grid-cols-2">
         <div className="space-y-4">
-          <div className="relative aspect-square">
+          <div className="relative aspect-square rounded-lg border border-red-500">
             {/** Show images of the product, if there is no image we will show default logo */}
-            {product.images && product.images.length > 0 ? (
-              product.images.map((image, index) => (
-                <Image
-                  key={index}
-                  src={image.url}
-                  alt={product.title}
-                  className="mb-6 rounded-lg object-cover"
-                  priority={true}
-                  width={2000}
-                  height={2000}
-                />
-              ))
-            ) : (
-              <Image
-                src="/logo.svg"
-                alt="Default Logo"
-                width="500"
-                height="500"
-                className="mb-2 h-full w-full rounded-lg object-cover"
-                priority={true}
-              />
-            )}
+            <div className="flex flex-col space-y-4">
+              {/* Main image */}
+              {/* Image Section */}
+              <div className="space-y-4">
+                {/* Main Image */}
+                <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg border border-gray-200">
+                  <Image
+                    src={selectedImage || "/logo.svg"}
+                    alt={product.title}
+                    className="h-full w-full object-cover"
+                    width={600}
+                    height={600}
+                    priority
+                  />
+                </div>
+
+                {/* Thumbnails */}
+                <div className="aspect-w-1 aspect-h-1 grid grid-cols-4 gap-2">
+                  {product.images?.map((image, index) => (
+                    <div
+                      key={index}
+                      className={`aspect-square cursor-pointer overflow-hidden rounded-lg border ${
+                        selectedImage === image.url
+                          ? "border-blue-500"
+                          : "border-gray-200"
+                      }`}
+                      onClick={() => setSelectedImage(image.url)}
+                    >
+                      <Image
+                        src={image.url}
+                        alt={product.title}
+                        className="h-full w-full object-cover"
+                        width={150}
+                        height={150}
+                        priority
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/** Show video of unboxing, embed youtube link, if there is nothing in product.video we will show nothing*/}
             {product.video && (
-              <div className=" border-shadow aspect-video rounded-lg">
+              <div className="border-shadow mt-4 aspect-video rounded-lg">
+                <h2 className="my-2 text-xl font-semibold">
+                  Бүтээгдэхүүний видео
+                </h2>
                 <iframe
                   width="100%"
                   height="100%"
@@ -317,6 +357,79 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </div>
         </div>
       </div>
+      {/** Cards for other products */}
+
+      <h2 className="my-12 text-2xl font-semibold">Бусад бараанууд</h2>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {otherProducts.map((product) => (
+          <Card key={product?.id} className="flex flex-col">
+            <CardContent className="p-4">
+              <div className="relative mb-4 flex aspect-square items-center">
+                <Image
+                  src={
+                    product.images?.length > 0
+                      ? product.images[0].url
+                      : "/logo.svg"
+                  }
+                  alt={product.title}
+                  width={500}
+                  height={500}
+                  priority={true}
+                />
+              </div>
+              <h2 className="mb-2 text-xl font-semibold">{product.title}</h2>
+              {/* <div className="mb-2 flex items-center">
+                <div className="flex">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-4 w-4 ${
+                        i < Math.floor(product.rating)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "fill-gray-300 text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="ml-2 text-sm text-gray-500">
+                  {product.rating} ({product.reviews} сэтгэгдэл)
+                </span>
+              </div> */}
+              <div className="mb-2 flex items-baseline">
+                <span className="text-2xl font-bold">
+                  ₮
+                  {product.price
+                    .toFixed()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </span>
+                <span className="ml-2 text-sm text-gray-500 line-through">
+                  ₮
+                  {product.originalPrice
+                    .toFixed()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </span>
+                <Badge variant="destructive" className="ml-2">
+                  Хэмнэлт ₮
+                  {(product.originalPrice - product.price)
+                    .toFixed()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </Badge>
+              </div>
+            </CardContent>
+            <CardFooter className="mt-auto">
+              <Button
+                variant="default"
+                asChild
+                className="w-full rounded-full bg-blue-500 text-white hover:bg-blue-400"
+              >
+                <Link href={`/products/${product.id}`}>Дэлгэрэнгүй</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+
+      {/** Dialog for purchase request */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
