@@ -84,6 +84,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         >
           <Navigation />
           {children}
+
           <Footer />
           <Analytics />
           <Toaster />

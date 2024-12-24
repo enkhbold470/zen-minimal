@@ -11,6 +11,7 @@ import {
   Mountain,
   ShoppingCart,
 } from "lucide-react"
+import { FacebookMessengerIcon } from "react-share"
 
 import { siteConfig } from "@/config/site"
 import { Button } from "@/components/ui/button"
@@ -33,7 +34,7 @@ const navigation = [
 ]
 
 const actionButton = {
-  href: "mailto:zen@enk.icu",
+  href: "https://m.me/103962149238180",
   label: "Холбоо барих",
 }
 
@@ -79,9 +80,12 @@ export default function Navigation() {
                 ))}
               </nav>
             </div>
-            <div className="flex space-x-4 border-t px-6 py-4">
-              <Link href={actionButton.href}>
-                <Button>{actionButton.label}</Button>
+            <div className="ml-auto flex space-x-4">
+              <Link href={actionButton.href} target="_blank">
+                <Button variant="outline" className="gap-2 p-2 font-bold">
+                  <FacebookMessengerIcon size={32} round={true} />
+                  {actionButton.label}
+                </Button>
               </Link>
               <ModeToggle />
             </div>
@@ -110,8 +114,11 @@ export default function Navigation() {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="ml-auto flex space-x-4">
-        <Link href={actionButton.href}>
-          <Button>{actionButton.label}</Button>
+        <Link href={actionButton.href} target="_blank">
+          <Button variant="outline" className="gap-2 p-2 font-bold">
+            <FacebookMessengerIcon size={32} round={true} />
+            {actionButton.label}
+          </Button>
         </Link>
         <ModeToggle />
       </div>
