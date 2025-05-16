@@ -3,53 +3,53 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import products from "@/data/laptops.json"
-import { Star } from "lucide-react"
 
-import { env } from "@/env.mjs"
-import { Product, ProductResponse } from "@/types/productTypes"
+import { Laptop } from "@/types/productTypes"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<Laptop[]>([])
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const response = await fetch(`/api/laptops?populate=*&randomSort=true`, {
-        headers: {
-          "ngrok-skip-browser-warning": "true",
-        },
-      })
-
+      const response = await fetch(`/api/laptops`)
       const data = await response.json()
-      // console.log(data)
-      return data
+      console.log(data)
+      // Ensure data is always an array
+      if (Array.isArray(data)) {
+        setProducts(data)
+      } else {
+        setProducts([data]) // Wrap single object in an array
+      }
     }
-    fetchProducts().then((data) => setProducts(data.data))
-  }, [])
-  //loading data
-  if (products.length === 0)
-    return (
-      <div className="flex animate-pulse items-center justify-center text-2xl">
-        Ачааллаж байна...
-      </div>
+
+    fetchProducts().catch((error) =>
+      console.error("Error fetching products:", error)
     )
+  }, [])
+
+  console.log(products)
+
+  // if (!Array.isArray(products)) {
+  //   return (
+  //     <div className="flex animate-pulse items-center justify-center text-2xl">
+  //       Ачааллаж байна...
+  //     </div>
+  //   )
+  // }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="mb-8 text-3xl font-bold">Манай Дэлгүүрт</h1>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
-          <Card key={product?.id} className="flex flex-col">
+          <Card key={product.id} className="flex flex-col">
             <CardContent className="p-4">
               <div className="relative mb-4 flex aspect-square items-center">
                 <Image
-                  src={
-                    product.images?.length > 0
-                      ? product.images[0].url
-                      : "/logo.svg"
-                  }
+                  src={product.imageUrl}
                   alt={product.title}
                   width={500}
                   height={500}
@@ -57,36 +57,13 @@ export default function ProductsPage() {
                 />
               </div>
               <h2 className="mb-2 text-xl font-semibold">{product.title}</h2>
-              {/* <div className="mb-2 flex items-center">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-4 w-4 ${
-                        i < Math.floor(product.rating)
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "fill-gray-300 text-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="ml-2 text-sm text-gray-500">
-                  {product.rating} ({product.reviews} сэтгэгдэл)
-                </span>
-              </div> */}
+              <p className="mb-2 text-gray-600">{product.description}</p>
               <div className="mb-2 flex items-baseline">
                 <span className="text-2xl font-bold">
                   {product.price >= 1_000_000
                     ? `₮${(product.price / 1_000_000).toFixed(2)} сая`
                     : `₮${(product.price / 1_000).toFixed(0)} мян`}{" "}
                 </span>
-
-                {/* <span className="ml-2 text-sm text-gray-500 line-through">
-                  ₮
-                  {product.originalPrice
-                    .toFixed()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                </span> */}
                 <Badge variant="destructive" className="ml-2 text-sm font-bold">
                   <span>
                     эсвэл {""}
