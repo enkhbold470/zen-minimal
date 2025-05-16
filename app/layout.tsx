@@ -86,7 +86,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           {children}
 
           <Footer />
-          <Analytics />
+          {/* <Analytics /> */}
           <Toaster />
         </ThemeProvider>
       </body>
