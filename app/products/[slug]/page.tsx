@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form"
 import ReactMarkdown from "react-markdown"
 import { z } from "zod"
 
-import { env } from "@/env.mjs"
 import { Laptop } from "@/types/productTypes"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"

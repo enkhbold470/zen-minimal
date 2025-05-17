@@ -1,6 +1,7 @@
 import { SiteConfig } from "@/types"
 
-import { env } from "@/env.mjs"
+
+
 
 export const siteConfig: SiteConfig = {
   name: "Зэн Нөтбүүк Дэлгүүр",
@@ -9,13 +10,13 @@ export const siteConfig: SiteConfig = {
     "Зэн Лаптоп Дэлгүүр - Хамгийн сүүлийн үеийн, шилдэг лаптопуудыг нэг дороос.",
   keywords: ["Цахим худалдаа", "Лаптопууд", "Технологи", "Онлайн дэлгүүр"],
   url: {
-    base: env.NEXT_PUBLIC_APP_URL,
+    base: `${process.env.NEXT_PUBLIC_APP_URL}`,
     author: "https://zenshop.enk.icu",
   },
   links: {
     github: "https://github.com/enkhbold470",
   },
-  ogImage: `${env.NEXT_PUBLIC_APP_URL}/og.png`,
+  ogImage: `${process.env.NEXT_PUBLIC_APP_URL}/og.png`,
   about:
     "Зэн Лаптоп Дэлгүүр нь хамгийн сүүлийн үеийн, шилдэг лаптопуудыг санал болгодог онлайн дэлгүүр юм. Бидний зорилго бол хэрэглэгчдэдээ хамгийн чанартай, найдвартай бүтээгдэхүүнийг хүргэх явдал юм.",
   goal: "Бидний зорилго бол үйлчлүүлэгчдийн хэрэгцээг ойлгож, тэдэнд хамгийн тохирсон лаптопуудыг санал болгох, улмаар Монголын хэрэглэгчдэд технологийн дэвшлийг хүртээмжтэй болгох явдал юм.",
