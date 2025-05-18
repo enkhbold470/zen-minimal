@@ -1,5 +1,5 @@
 {
-  "name": "next-entree",
+  "name": "zen-store",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "format": "pnpm prettier --write",
-    "format:check": "pnpm prettier  --check"
+    "format:check": "pnpm prettier  --check",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev"
+
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
