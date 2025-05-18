@@ -46,6 +46,31 @@ const formSchema = z.object({
   laptopChoice: z.string(),
 })
 
+const getYoutubeEmbedUrl = (url: string): string | null => {
+  if (!url) return null
+  try {
+    const urlObj = new URL(url)
+    if (
+      urlObj.hostname === "www.youtube.com" ||
+      urlObj.hostname === "youtube.com"
+    ) {
+      if (urlObj.pathname === "/watch") {
+        const videoId = urlObj.searchParams.get("v")
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : null
+      } else if (urlObj.pathname.startsWith("/embed/")) {
+        return url // Already an embed URL
+      }
+    } else if (urlObj.hostname === "youtu.be") {
+      const videoId = urlObj.pathname.substring(1)
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : null
+    }
+  } catch (error) {
+    console.error("Error parsing video URL:", error)
+    return null
+  }
+  return null // Not a recognized YouTube URL
+}
+
 export default function ProductPage({ params }: { params: { slug: string } }) {
   const [products, setProducts] = useState<Laptop[]>([])
   const [isSubscribed, setIsSubscribed] = useState(false)
@@ -94,7 +119,11 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   useEffect(() => {
     if (product) {
-      setSelectedImage(product.images[0].url || "/logo.svg")
+      setSelectedImage(
+        product.images && product.images.length > 0
+          ? product.images[0].url
+          : "/logo.svg"
+      )
       form.setValue("laptopChoice", product.title + "?id=" + product.id || "")
     } else {
       setSelectedImage(null)
@@ -160,6 +189,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     )
   }
 
+  const embedUrl = product.videoUrl
+    ? getYoutubeEmbedUrl(product.videoUrl)
+    : null
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid gap-8 border-b border-gray-200 pb-8 md:grid-cols-2">
@@ -178,7 +211,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   />
                 </div>
                 <div className="aspect-w-1 aspect-h-1 grid grid-cols-4 gap-2">
-                  {product.images.map((image, index) => (
+                  {product.images.map((image) => (
                     <div
                       key={image.id}
                       className={`aspect-square cursor-pointer overflow-hidden rounded-lg border ${
@@ -206,7 +239,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         <div className="space-y-6">
           <h1 className="text-3xl font-bold">{product.title}</h1>
           <div className="jutify-between mb-2 flex items-center gap-2">
-            <Badge variant="default">{product.discount}</Badge>
+            {product.discount && (
+              <Badge variant="default">{product.discount}</Badge>
+            )}
             <span className="text-2xl font-bold text-primary">
               ${product.price}
             </span>
@@ -233,6 +268,21 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </Button>
 
           <ShareButtons product={product} />
+
+          {embedUrl && (
+            <div className="mt-8">
+              <h2 className="mb-4 text-xl font-semibold">Product Video</h2>
+              <div className="aspect-video w-full overflow-hidden rounded-lg border">
+                <iframe
+                  className="h-full w-full"
+                  src={embedUrl}
+                  title="Product Video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
