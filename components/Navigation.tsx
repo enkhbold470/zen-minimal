@@ -23,7 +23,13 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { ModeToggle } from "@/components/mode-toggle"
 
 const navigation = [
@@ -54,6 +60,9 @@ export default function Navigation() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="bg-background">
+          <SheetHeader>
+            <SheetTitle className="sr-only">Menu</SheetTitle>
+          </SheetHeader>
           <div className="flex h-full flex-col justify-between">
             <div className="grid gap-6 py-6">
               <Link

@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Laptop {
+  id            Int      @id @default(autoincrement())
+  title         String
+  description   String
+  specs         String[]
+  price         Float
+  originalPrice Float
+  discount      String?
+  videoUrl      String?  // YouTube video URL
+  datePublished DateTime @default(now())
+  images        Image[]  // Relationship to images
+}
+
+model Image {
+  id       Int     @id @default(autoincrement())
+  url      String
+  alt      String?
+  position Int     @default(0) // For image ordering
+  laptopId Int
+  laptop   Laptop  @relation(fields: [laptopId], references: [id], onDelete: Cascade)
+}

@@ -1,4 +1,9 @@
-
+export interface ImageItem {
+  id: number;
+  url: string;
+  alt?: string | null;
+  position: number;
+}
 
 export interface Laptop {
   id: number;
@@ -7,7 +12,8 @@ export interface Laptop {
   specs: string[];
   price: number;
   originalPrice: number;
-  discount: string;
-  imageUrl: string;
+  discount?: string | null;
+  images: ImageItem[];
+  videoUrl?: string | null;
   datePublished: string;
 }

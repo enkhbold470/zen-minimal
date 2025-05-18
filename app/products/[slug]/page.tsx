@@ -53,21 +53,19 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { toast } = useToast()
 
-  // Form validation and handlers (moved up)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
       phoneNumber: "",
       email: "",
-      laptopChoice: "", // This will be updated later if product exists
+      laptopChoice: "",
     },
   })
 
   const handleRequestPurchase = () => setIsDialogOpen(true)
   const closeDialog = () => setIsDialogOpen(false)
 
-  // Fetch product data
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true)
@@ -88,10 +86,8 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       }
     }
     fetchProducts()
-  }, []) // Removed params.slug as dependency, products list is independent of current slug
+  }, [])
 
-  // Derive product from products list after fetch
-  // This calculation can stay here as it's not a hook and depends on `products` state.
   const product =
     !isLoading && products.length > 0
       ? products.find((p) => p.id == Number(params.slug))
@@ -99,19 +95,15 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   useEffect(() => {
     if (product) {
-      setSelectedImage(product.imageUrl || "/logo.svg")
-      // Update form's default/current value for laptopChoice if product changes
+      setSelectedImage(product.images[0].url || "/logo.svg")
       form.setValue("laptopChoice", product.title + "?id=" + product.id || "")
     } else {
-      // Reset selected image if no product or product is not found
       setSelectedImage(null)
       form.setValue("laptopChoice", "")
     }
-  }, [product, form]) // Added form to dependency array as per eslint exhaustive-deps rule
+  }, [product, form])
 
-  // Handle form submission
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Ensure product is available before proceeding with submission logic if needed
     if (!product) {
       toast({
         title: "Алдаа!",
@@ -121,8 +113,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       return
     }
     try {
-      setIsLoading(true) // Re-use isLoading for form submission indication
-      // values.laptopChoice is already set by the form or updated by useEffect
+      setIsLoading(true)
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_SHEETS_URL}`, {
         method: "POST",
@@ -139,7 +130,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         variant: "default",
       })
       setIsSubscribed(true)
-      closeDialog() // Close dialog on success
+      closeDialog()
     } catch (error) {
       toast({
         title: "Алдаа гарлаа!",
@@ -147,18 +138,14 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         variant: "destructive",
       })
     } finally {
-      setIsLoading(false) // Reset loading state
-      // Optional: Reset isSubscribed after a delay if needed, or manage it differently
+      setIsLoading(false)
       setTimeout(() => {
         setIsSubscribed(false)
-        // closeDialog() // Moved to success path
       }, 3000)
     }
   }
 
-  // Conditional Rendering starts here
   if (isLoading && !product) {
-    // Show main loading if still fetching products and product isn't derived yet
     return (
       <div className="flex animate-pulse items-center justify-center text-2xl">
         Ачааллаж байна...
@@ -167,7 +154,6 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   }
 
   if (!product) {
-    // If, after loading, product is still not found
     return (
       <div className="flex items-center justify-center text-2xl">
         Product with ID {params.slug} not found.
@@ -175,7 +161,6 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     )
   }
 
-  // Main component render once product is available
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid gap-8 border-b border-gray-200 pb-8 md:grid-cols-2">
@@ -185,7 +170,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               <div className="space-y-4">
                 <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg border border-gray-200">
                   <Image
-                    src={selectedImage || "/logo.svg"} // Use state for selectedImage
+                    src={selectedImage || "/logo.svg"}
                     alt={product.title}
                     className="h-full w-full object-cover"
                     width={600}
@@ -194,32 +179,32 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   />
                 </div>
                 <div className="aspect-w-1 aspect-h-1 grid grid-cols-4 gap-2">
-                  {product.imageUrl && (
+                  {product.images.map((image, index) => (
                     <div
+                      key={image.id}
                       className={`aspect-square cursor-pointer overflow-hidden rounded-lg border ${
-                        selectedImage === product.imageUrl
+                        selectedImage === image.url
                           ? "border-blue-500"
                           : "border-gray-200"
                       }`}
-                      onClick={() => setSelectedImage(product.imageUrl)} // Use state setter
+                      onClick={() => setSelectedImage(image.url)}
                     >
                       <Image
-                        src={product.imageUrl}
-                        alt={product.title}
+                        src={image.url}
+                        alt={image.alt || "Laptop Image"}
                         className="h-full w-full object-cover"
                         width={150}
                         height={150}
                         priority
                       />
                     </div>
-                  )}
-                  {/* Add more thumbnails if product.imageUrls (plural) exists and is an array */}
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className=" space-y-6 ">
+        <div className="space-y-6">
           <h1 className="text-3xl font-bold">{product.title}</h1>
           <div className="jutify-between mb-2 flex items-center gap-2">
             <Badge variant="default">{product.discount}</Badge>
@@ -252,19 +237,12 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         </div>
       </div>
 
-      {/* TODO: Add otherProducts section if needed, ensuring it also handles loading/empty states correctly */}
-
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <Form {...form}>
+            <DialogTitle>{product.title}</DialogTitle>
+            <DialogDescription>Хүсэлтээ бөглөнө үү.</DialogDescription>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <DialogHeader>
-                <DialogTitle>Худалдан авах хүсэлт</DialogTitle>
-                <DialogDescription>
-                  Таны сонгосон бүтээгдэхүүн: {product.title}. Хүсэлтээ бөглөнө
-                  үү.
-                </DialogDescription>
-              </DialogHeader>
               <FormField
                 control={form.control}
                 name="username"
