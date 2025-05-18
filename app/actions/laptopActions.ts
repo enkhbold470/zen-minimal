@@ -1,8 +1,9 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
 import { put } from '@vercel/blob';
 import { revalidatePath } from 'next/cache';
+
+import { prisma } from '@/lib/prisma';
 import { CreateLaptopState } from '@/types/productTypes';
 import { LaptopSchema } from './laptopTypes';
 
