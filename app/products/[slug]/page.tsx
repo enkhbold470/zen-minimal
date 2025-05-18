@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import ShareButtons from "@/components/shareButtons"
+import { getLaptops } from "@/app/actions"
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -70,14 +71,12 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     const fetchProducts = async () => {
       setIsLoading(true)
       try {
-        const response = await fetch(`/api/laptops`)
-        if (!response.ok) {
-          console.error(`HTTP error! status: ${response.status}`)
+        const data = await getLaptops()
+        if (!data) {
           setProducts([])
           return
         }
-        const data = await response.json()
-        setProducts(data)
+        setProducts(data as unknown as Laptop[])
       } catch (error) {
         console.error("Failed to fetch products:", error)
         setProducts([])

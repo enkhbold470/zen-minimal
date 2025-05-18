@@ -8,6 +8,7 @@ import { Laptop } from "@/types/productTypes"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { getLaptops } from "@/app/actions"
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Laptop[]>([])
@@ -18,15 +19,14 @@ export default function ProductsPage() {
     const fetchProducts = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch(`/api/laptops`)
-        const data = await response.json()
+        const data = await getLaptops()
 
         if (!data || !Array.isArray(data) || data.length === 0) {
           setError("Одоогоор бүтээгдэхүүн байхгүй байна")
           return
         }
 
-        setProducts(data)
+        setProducts(data as unknown as Laptop[])
       } catch (error) {
         setError("Бүтээгдэхүүн татахад алдаа гарлаа")
         console.error("Error fetching products:", error)
