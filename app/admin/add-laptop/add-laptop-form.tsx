@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Image from "next/image"
 import { XCircle } from "lucide-react"
 import { useFormState, useFormStatus } from "react-dom"
 
@@ -263,10 +264,12 @@ export function AddLaptopForm() {
           <div className="mt-4 grid grid-cols-3 gap-4 sm:grid-cols-4">
             {imagePreviews.map((preview, index) => (
               <div key={index} className="relative">
-                <img
+                <Image
                   src={preview}
                   alt={`Preview ${index + 1}`}
                   className="h-24 w-24 rounded-md object-cover"
+                  width={96}
+                  height={96}
                 />
                 <button
                   type="button"

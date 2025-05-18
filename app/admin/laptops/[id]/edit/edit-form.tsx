@@ -374,10 +374,12 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
             <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {newImagePreviews.map((preview, index) => (
                 <div key={index} className="relative">
-                  <img
+                  <Image
                     src={preview}
                     alt={`New image ${index + 1}`}
                     className="h-24 w-24 rounded-md object-cover"
+                    width={96}
+                    height={96}
                   />
                   <button
                     type="button"
