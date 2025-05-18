@@ -3,7 +3,8 @@
 import { prisma } from '@/lib/prisma';
 import { put } from '@vercel/blob';
 import { revalidatePath } from 'next/cache';
-import { LaptopSchema, type CreateLaptopState } from './laptopTypes';
+import { CreateLaptopState } from '@/types/productTypes';
+import { LaptopSchema } from './laptopTypes';
 
 export async function createLaptop(prevState: CreateLaptopState, formData: FormData): Promise<CreateLaptopState> {
   const validatedFields = LaptopSchema.safeParse({

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Trash2 } from "lucide-react"
 
+import { DeleteLaptopButtonProps } from "@/types/productTypes"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,10 +18,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { deleteLaptop } from "@/app/actions"
-
-interface DeleteLaptopButtonProps {
-  id: number
-}
 
 export function DeleteLaptopButton({ id }: DeleteLaptopButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false)

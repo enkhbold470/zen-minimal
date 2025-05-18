@@ -5,17 +5,10 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { MoveDown, MoveUp, Trash2, XCircle } from "lucide-react"
 
-import { Laptop } from "@/lib/generated/prisma/client"
+import { EditLaptopFormProps, ImageItem, Laptop } from "@/types/productTypes"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { deleteImage, updateImagePositions, updateLaptop } from "@/app/actions"
-import { ImageItem } from "@/app/actions/laptopTypes"
-
-interface EditLaptopFormProps {
-  laptop: Laptop & {
-    images: ImageItem[]
-  }
-}
 
 export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
   const router = useRouter()

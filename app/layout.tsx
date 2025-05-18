@@ -13,10 +13,6 @@ import { ThemeProvider } from "@/components/theme-provider"
 
 const roboto = Roboto({ weight: ["300"], subsets: ["cyrillic", "latin"] })
 
-interface RootLayoutProps {
-  children: React.ReactNode
-}
-
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url.base),
   title: {
@@ -67,7 +63,11 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body

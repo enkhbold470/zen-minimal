@@ -5,7 +5,8 @@ import Image from "next/image"
 import { XCircle } from "lucide-react"
 import { useFormState, useFormStatus } from "react-dom"
 
-import { createLaptop, type CreateLaptopState } from "@/app/actions"
+import { CreateLaptopState } from "@/types/productTypes"
+import { createLaptop } from "@/app/actions"
 
 const initialState: CreateLaptopState = {
   message: "",

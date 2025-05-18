@@ -32,25 +32,3 @@ export const LaptopSchema = z.object({
   .refine(files => files.every(file => file.size < 4 * 1024 * 1024), 'Each image must be less than 4MB.')
 });
 
-export interface CreateLaptopState {
-  message?: string;
-  errors?: {
-    title?: string[];
-    description?: string[];
-    specs?: string[];
-    price?: string[];
-    originalPrice?: string[];
-    discount?: string[];
-    videoUrl?: string[];
-    images?: string[];
-    database?: string[];
-  };
-  success: boolean;
-}
-
-export interface ImageItem {
-  id: number;
-  url: string;
-  alt?: string | null;
-  position: number;
-} 

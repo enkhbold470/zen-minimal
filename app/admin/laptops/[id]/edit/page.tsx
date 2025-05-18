@@ -1,14 +1,9 @@
 import { notFound } from "next/navigation"
 
+import { EditLaptopPageProps, Laptop } from "@/types/productTypes"
 import { prisma } from "@/lib/prisma"
 
 import { EditLaptopForm } from "./edit-form"
-
-interface EditLaptopPageProps {
-  params: {
-    id: string
-  }
-}
 
 export default async function EditLaptopPage({ params }: EditLaptopPageProps) {
   const laptopId = parseInt(params.id, 10)
@@ -32,7 +27,7 @@ export default async function EditLaptopPage({ params }: EditLaptopPageProps) {
         </p>
       </div>
 
-      <EditLaptopForm laptop={laptop} />
+      <EditLaptopForm laptop={laptop as unknown as Laptop} />
     </div>
   )
 }
