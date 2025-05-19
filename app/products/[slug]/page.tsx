@@ -55,7 +55,7 @@ const getYoutubeEmbedUrl = (url: string): string | null => {
       urlObj.hostname === "www.youtube.com" ||
       urlObj.hostname === "youtube.com"
     ) {
-      if (urlObj.pathname === "/watch") {
+      if (urlObj.pathname === "/watch" || urlObj.pathname === "/") {
         const videoId = urlObj.searchParams.get("v")
         return videoId ? `https://www.youtube.com/embed/${videoId}` : null
       } else if (urlObj.pathname.startsWith("/embed/")) {
@@ -70,6 +70,55 @@ const getYoutubeEmbedUrl = (url: string): string | null => {
     return null
   }
   return null // Not a recognized YouTube URL
+}
+
+const getYoutubeId = (url: string): string | null => {
+  if (!url) return null
+
+  let videoId: string | null = null
+
+  try {
+    const parsedUrl = new URL(url)
+    const hostname = parsedUrl.hostname
+    const pathname = parsedUrl.pathname
+
+    if (hostname.includes("youtube.com")) {
+      if (pathname === "/watch") {
+        videoId = parsedUrl.searchParams.get("v")
+      } else if (pathname.startsWith("/shorts/")) {
+        videoId = pathname.substring("/shorts/".length)
+      } else if (pathname.startsWith("/embed/")) {
+        videoId = pathname.substring("/embed/".length)
+      } else if (parsedUrl.searchParams.get("v")) {
+        // Fallback for youtube.com/?v=ID
+        videoId = parsedUrl.searchParams.get("v")
+      }
+    } else if (hostname.includes("youtu.be")) {
+      videoId = pathname.substring(1) // Remove the leading '/'
+    }
+  } catch (error) {
+    // If URL parsing fails, try regex as a fallback (less robust)
+    console.warn(
+      "URL parsing failed, falling back to regex for YouTube ID extraction:",
+      error
+    )
+    const regex =
+      /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+    const match = url.match(regex)
+    if (match && match[1]) {
+      videoId = match[1]
+    }
+  }
+
+  // Clean up any extra params from the videoId if they exist
+  if (videoId && videoId.includes("?")) {
+    videoId = videoId.split("?")[0]
+  }
+  if (videoId && videoId.includes("&")) {
+    videoId = videoId.split("&")[0]
+  }
+
+  return videoId
 }
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
@@ -239,13 +288,14 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   Бүтээгдэхүүн видео
                 </h2>
               </div>
-              {embedUrl && (
-                <div className="aspect-video w-full overflow-hidden rounded-lg border">
+              {product.videoUrl && getYoutubeId(product.videoUrl) && (
+                <div className="mb-4 aspect-video w-full overflow-hidden rounded-lg border">
                   <iframe
-                    className="h-full w-full"
-                    src={embedUrl}
-                    title="Product Video"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${getYoutubeId(product.videoUrl)}?rel=0&loop=1&color=white&mute=1`}
+                    frameBorder={0}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   ></iframe>
                 </div>

@@ -268,7 +268,7 @@ export function AddLaptopForm() {
             htmlFor="title"
             className="block text-sm font-medium text-gray-700"
           >
-            Title
+            Title <span className="text-red-500">*</span>
           </label>
           <button
             type="button"
@@ -298,7 +298,7 @@ export function AddLaptopForm() {
           htmlFor="description"
           className="block text-sm font-medium text-gray-700"
         >
-          Description
+          Description <span className="text-red-500">*</span>
         </label>
         <textarea
           name="description"
@@ -319,7 +319,8 @@ export function AddLaptopForm() {
           htmlFor="specs"
           className="block text-sm font-medium text-gray-700"
         >
-          Specifications (comma-separated)
+          Specifications (comma-separated){" "}
+          <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -340,7 +341,7 @@ export function AddLaptopForm() {
             htmlFor="price"
             className="block text-sm font-medium text-gray-700"
           >
-            Price
+            Price <span className="text-red-500">*</span>
           </label>
           <input
             type="number"
@@ -361,7 +362,8 @@ export function AddLaptopForm() {
             htmlFor="originalPrice"
             className="block text-sm font-medium text-gray-700"
           >
-            Original Price (auto-calculated)
+            Original Price (auto-calculated){" "}
+            <span className="text-red-500">*</span>
           </label>
           <input
             type="number"
@@ -387,7 +389,8 @@ export function AddLaptopForm() {
           htmlFor="discount"
           className="block text-sm font-medium text-gray-700"
         >
-          Discount (e.g., 10% off, $50 off, or 50)
+          Discount (e.g., 10% off, $50 off, or 50){" "}
+          <span className="text-red-500">*</span>
         </label>
         <input
           type="text" // Changed to text to allow "%" or "$"
@@ -427,7 +430,8 @@ export function AddLaptopForm() {
           htmlFor="images"
           className="mb-1 block text-sm font-medium text-gray-700"
         >
-          Laptop Images (drag & drop or click)
+          Laptop Images (drag & drop or click){" "}
+          <span className="text-red-500">*</span>
         </label>
         <div
           onDragOver={handleDragOver}
