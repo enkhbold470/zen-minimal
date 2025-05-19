@@ -1,10 +1,10 @@
 "use client"
 
 // Convert to client component
-import { useEffect, useMemo, useState } from "react" // Import useState, useEffect, useMemo
+import { useEffect, useMemo, useState, useTransition } from "react" // Import useState, useEffect, useMemo, useTransition
 import Image from "next/image"
 import Link from "next/link"
-import { Pencil, Plus, Search, Trash2 } from "lucide-react" // Import Search icon
+import { Eye, EyeOff, Pencil, Plus, Search, Trash2 } from "lucide-react" // Import Search icon, Eye, EyeOff
 
 import { Laptop } from "@/types/productTypes" // Import Laptop type
 import { commafy } from "@/lib/utils"
@@ -18,7 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input" // Import Input component
-import { getLaptops } from "@/app/actions"
+import { getAdminLaptops, toggleLaptopPublishedStatus } from "@/app/actions" // Import toggleLaptopPublishedStatus, use getAdminLaptops
 
 import { DeleteLaptopButton } from "./delete-button"
 
@@ -27,23 +27,25 @@ export default function LaptopsAdminPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
+  const [isPending, startTransition] = useTransition() // For toggle status
+
+  const fetchLaptopsData = async () => {
+    try {
+      setIsLoading(true)
+      const data = await getAdminLaptops()
+      setLaptops(data || [])
+      setError(null)
+    } catch (err) {
+      console.error("Failed to fetch laptops:", err)
+      setError("Failed to load laptops. Please try again.")
+      setLaptops([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
-    async function fetchLaptops() {
-      try {
-        setIsLoading(true)
-        const data = await getLaptops()
-        setLaptops(data || [])
-        setError(null)
-      } catch (err) {
-        console.error("Failed to fetch laptops:", err)
-        setError("Failed to load laptops. Please try again.")
-        setLaptops([])
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchLaptops()
+    fetchLaptopsData()
   }, [])
 
   const filteredLaptops = useMemo(() => {
@@ -54,10 +56,34 @@ export default function LaptopsAdminPage() {
       (laptop) =>
         laptop.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         laptop.description.toLowerCase().includes(searchTerm.toLowerCase())
-      // Add more fields to search if needed, e.g., specs
-      // laptop.specs.join(', ').toLowerCase().includes(searchTerm.toLowerCase())
     )
   }, [laptops, searchTerm])
+
+  const handleTogglePublished = (laptopId: number, currentStatus: boolean) => {
+    startTransition(async () => {
+      try {
+        const result = await toggleLaptopPublishedStatus(
+          laptopId,
+          currentStatus
+        )
+        if (result.success) {
+          // Update local state to reflect the change immediately
+          setLaptops((prevLaptops) =>
+            prevLaptops.map((lap) =>
+              lap.id === laptopId
+                ? { ...lap, published: result.newState! }
+                : lap
+            )
+          )
+        } else {
+          setError(result.error || "Failed to update status.")
+        }
+      } catch (err) {
+        console.error("Error toggling published status:", err)
+        setError("An unexpected error occurred.")
+      }
+    })
+  }
 
   return (
     <div className="container mx-auto py-10">
@@ -123,8 +149,16 @@ export default function LaptopsAdminPage() {
           {filteredLaptops.map((laptop) => (
             <Card key={laptop.id} className="flex flex-col overflow-hidden">
               <CardHeader className="p-4">
-                <CardTitle className="line-clamp-1 h-6" title={laptop.title}>
-                  {laptop.title}
+                <CardTitle
+                  className="line-clamp-1 flex h-6 items-center justify-between"
+                  title={laptop.title}
+                >
+                  <span className="line-clamp-1">{laptop.title}</span>
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs ${laptop.published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
+                  >
+                    {laptop.published ? "Published" : "Draft"}
+                  </span>
                 </CardTitle>
                 <CardDescription>₮{commafy(laptop.price)}</CardDescription>
               </CardHeader>
@@ -156,6 +190,26 @@ export default function LaptopsAdminPage() {
                     Edit
                   </Button>
                 </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1"
+                  onClick={() =>
+                    handleTogglePublished(laptop.id, laptop.published)
+                  }
+                  disabled={isPending}
+                >
+                  {laptop.published ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                  {isPending
+                    ? "..."
+                    : laptop.published
+                      ? "Unpublish"
+                      : "Publish"}
+                </Button>
                 <DeleteLaptopButton id={laptop.id} />
               </CardFooter>
             </Card>

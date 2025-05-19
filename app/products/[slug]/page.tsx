@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import ShareButtons from "@/components/shareButtons"
-import { getLaptops } from "@/app/actions"
+import { getPublishedLaptops } from "@/app/actions"
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -78,7 +78,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     const fetchProducts = async () => {
       setIsLoading(true)
       try {
-        const data = await getLaptops()
+        const data = await getPublishedLaptops()
         if (!data) {
           setProducts([])
           return
