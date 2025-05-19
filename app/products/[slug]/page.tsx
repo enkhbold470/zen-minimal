@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Send } from "lucide-react"
+import { Copy, Send } from "lucide-react"
 import { useForm } from "react-hook-form"
 import ReactMarkdown from "react-markdown"
 import { z } from "zod"
@@ -13,6 +13,7 @@ import { Laptop } from "@/types/productTypes"
 import {
   checkPercentage,
   commafy,
+  copyToClipboard,
   getYoutubeEmbedUrl,
   getYoutubeId,
 } from "@/lib/utils"
@@ -269,7 +270,28 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <ReactMarkdown className="prose max-w-none">
             {product.description}
           </ReactMarkdown>
-
+          {/* product id */}{" "}
+          <span className="text-sm">
+            <Button
+              onClick={() => {
+                copyToClipboard(
+                  `${process.env.NEXT_PUBLIC_APP_URL}/products/${product.id}`
+                )
+                toast({
+                  title: "Хуулагдлаа",
+                  description: "Линк амжилттай хуулагдлаа.",
+                })
+              }}
+              className="cursor-pointer"
+              variant="outline"
+            >
+              Бүтээгдэхүүний Регистер ID:{" "}
+              <span className="text-bold text-orange-500">
+                {product.id.toString()}
+              </span>
+              <Copy className="ml-2 h-5 w-5" />
+            </Button>
+          </span>
           <Button
             onClick={handleRequestPurchase}
             size="lg"
@@ -278,7 +300,6 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           >
             Худалдан авах хүсэлт илгээх <Send className="ml-2 h-5 w-5" />
           </Button>
-
           <ShareButtons product={product} />
         </div>
       </div>
@@ -286,7 +307,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <Form {...form}>
-            <DialogTitle>{product.title}</DialogTitle>
+            <DialogTitle>
+              Бүтээгдэхүүн: {product.title} - Регистер: {product.id}
+            </DialogTitle>
             <DialogDescription>Хүсэлтээ бөглөнө үү.</DialogDescription>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
