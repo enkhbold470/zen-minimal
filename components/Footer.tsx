@@ -20,8 +20,7 @@ export default function Footer() {
         ))}
       </nav>
       <div className="mt-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} {siteConfig.name}. Бүх эрх хуулиар
-        хамгаалагдсан.
+        © {new Date().getFullYear()} {siteConfig.name}.
       </div>
     </footer>
   )
