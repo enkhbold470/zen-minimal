@@ -233,6 +233,22 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   ))}
                 </div>
               </div>
+              <div className="mt-8 ">
+                <h2 className="mb-2 text-xl font-semibold">
+                  Бүтээгдэхүүн видео
+                </h2>
+              </div>
+              {embedUrl && (
+                <div className="aspect-video w-full overflow-hidden rounded-lg border">
+                  <iframe
+                    className="h-full w-full"
+                    src={embedUrl}
+                    title="Product Video"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -268,21 +284,6 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </Button>
 
           <ShareButtons product={product} />
-
-          {embedUrl && (
-            <div className="mt-8">
-              <h2 className="mb-4 text-xl font-semibold">Product Video</h2>
-              <div className="aspect-video w-full overflow-hidden rounded-lg border">
-                <iframe
-                  className="h-full w-full"
-                  src={embedUrl}
-                  title="Product Video"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                ></iframe>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
