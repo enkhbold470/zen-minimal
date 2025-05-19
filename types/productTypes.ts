@@ -15,7 +15,7 @@ export interface Laptop {
   discount?: string | null;
   images: ImageItem[];
   videoUrl?: string | null;
-  datePublished: string;
+  datePublished: Date;
 }
 
 export interface EditLaptopPageProps {

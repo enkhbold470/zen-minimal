@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { MoveDown, MoveUp, Trash2, XCircle } from "lucide-react"
+import { MoveDown, MoveUp, Trash2, UploadCloud, XCircle } from "lucide-react"
 
 import { EditLaptopFormProps, ImageItem, Laptop } from "@/types/productTypes"
 import { Button } from "@/components/ui/button"
@@ -21,26 +21,39 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState("")
   const [isSuccess, setIsSuccess] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
 
-  // Handle image selection for new images
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files
-    if (selectedFiles && selectedFiles.length > 0) {
-      const newFiles = Array.from(selectedFiles)
-      setNewImageFiles((prevFiles) => [...prevFiles, ...newFiles])
+  // Process new files (from input or drag-and-drop)
+  const processNewFiles = useCallback((files: FileList | null) => {
+    if (files && files.length > 0) {
+      const newFilesArray = Array.from(files)
+      const validImageFiles = newFilesArray.filter((file) =>
+        file.type.startsWith("image/")
+      )
 
-      // Create URL previews
-      const newPreviews = newFiles.map((file) => URL.createObjectURL(file))
-      setNewImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews])
+      setNewImageFiles((prevFiles) => [...prevFiles, ...validImageFiles])
+
+      const newPreviewsArray = validImageFiles.map((file) =>
+        URL.createObjectURL(file)
+      )
+      setNewImagePreviews((prevPreviews) => [
+        ...prevPreviews,
+        ...newPreviewsArray,
+      ])
     }
+  }, [])
+
+  // Handle image selection for new images (file input)
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    processNewFiles(e.target.files)
   }
 
   // Remove a new image from the selection
   const removeNewImage = (index: number) => {
-    setNewImageFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
-
-    // Revoke the URL object to free memory
+    // Revoke the URL object to free memory before removing from state
     URL.revokeObjectURL(newImagePreviews[index])
+
+    setNewImageFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
     setNewImagePreviews((prevPreviews) =>
       prevPreviews.filter((_, i) => i !== index)
     )
@@ -53,25 +66,20 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
     setMessage("")
 
     try {
-      // Create a FormData instance from the form
       const formData = new FormData(e.currentTarget)
-
-      // Add any new image files
-      formData.delete("newImages") // Remove any existing data
+      formData.delete("newImages")
       newImageFiles.forEach((file) => {
         formData.append("newImages", file)
       })
 
-      // Submit the form
       const result = await updateLaptop(laptop.id, formData)
 
       if (result.success) {
         setIsSuccess(true)
         setMessage(result.message || "Laptop updated successfully")
-        // Reset new image files
         setNewImageFiles([])
         setNewImagePreviews([])
-        // Refresh the router to get updated data
+        // No need to reset existingImages here, they are managed separately
         router.refresh()
       } else {
         setIsSuccess(false)
@@ -86,24 +94,27 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
     }
   }
 
-  // Delete an existing image
   const handleDeleteImage = async (imageId: number) => {
     try {
       const result = await deleteImage(imageId)
       if (result.success) {
-        // Update the local state
         setExistingImages((prevImages) =>
           prevImages.filter((img) => img.id !== imageId)
         )
-        // Refresh the router to get updated data
         router.refresh()
+      } else {
+        const errorMessage = result.error || "Failed to delete image."
+        console.error("Failed to delete image:", errorMessage)
+        setMessage(errorMessage)
+        setIsSuccess(false)
       }
     } catch (error) {
       console.error("Error deleting image:", error)
+      setMessage("An error occurred while deleting the image.")
+      setIsSuccess(false)
     }
   }
 
-  // Move image up or down
   const moveImage = async (imageId: number, direction: "up" | "down") => {
     const imagesCopy = [...existingImages]
     const index = imagesCopy.findIndex((img) => img.id === imageId)
@@ -111,39 +122,70 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
     if (index === -1) return
 
     if (direction === "up" && index > 0) {
-      // Swap with the previous image
       ;[imagesCopy[index - 1], imagesCopy[index]] = [
         imagesCopy[index],
         imagesCopy[index - 1],
       ]
     } else if (direction === "down" && index < imagesCopy.length - 1) {
-      // Swap with the next image
       ;[imagesCopy[index], imagesCopy[index + 1]] = [
         imagesCopy[index + 1],
         imagesCopy[index],
       ]
     } else {
-      return // Can't move further
+      return
     }
 
-    // Update the position values
-    const updatedImages = imagesCopy.map((img, i) => ({
+    const updatedImagePositions = imagesCopy.map((img, i) => ({
       id: img.id,
       position: i,
     }))
 
     try {
-      const result = await updateImagePositions(updatedImages)
+      const result = await updateImagePositions(updatedImagePositions)
       if (result.success) {
-        // Update local state with new positions
-        setExistingImages(imagesCopy)
-        // Refresh the router
+        setExistingImages(imagesCopy.map((img, i) => ({ ...img, position: i })))
         router.refresh()
+      } else {
+        const errorMessage = result.error || "Failed to reorder images."
+        console.error("Failed to reorder images:", errorMessage)
+        setMessage(errorMessage)
+        setIsSuccess(false)
       }
     } catch (error) {
       console.error("Error reordering images:", error)
+      setMessage("An error occurred while reordering images.")
+      setIsSuccess(false)
     }
   }
+
+  // Drag and drop handlers for new images
+  const handleDragOver = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      setIsDragging(true)
+    },
+    []
+  )
+
+  const handleDragLeave = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      setIsDragging(false)
+    },
+    []
+  )
+
+  const handleDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      setIsDragging(false)
+      processNewFiles(event.dataTransfer.files)
+    },
+    [processNewFiles]
+  )
 
   const commonInputClass =
     "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
@@ -165,7 +207,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
             htmlFor="title"
             className="block text-sm font-medium text-gray-700"
           >
-            Title
+            Title <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -182,7 +224,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
             htmlFor="description"
             className="block text-sm font-medium text-gray-700"
           >
-            Description
+            Description <span className="text-red-500">*</span>
           </label>
           <textarea
             name="description"
@@ -199,7 +241,8 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
             htmlFor="specs"
             className="block text-sm font-medium text-gray-700"
           >
-            Specifications (comma-separated)
+            Specifications (comma-separated){" "}
+            <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -218,7 +261,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
               htmlFor="price"
               className="block text-sm font-medium text-gray-700"
             >
-              Price
+              Price <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -235,7 +278,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
               htmlFor="originalPrice"
               className="block text-sm font-medium text-gray-700"
             >
-              Original Price
+              Original Price <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -293,78 +336,113 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
         {existingImages.length > 0 && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Current Images</h3>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {existingImages.map((image, index) => (
-                <div
-                  key={image.id}
-                  className="flex items-center rounded-lg border p-3"
-                >
-                  <div className="relative h-24 w-24 overflow-hidden rounded-md">
-                    <Image
-                      src={image.url}
-                      alt={image.alt || `Image ${index + 1}`}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="ml-4 flex flex-col space-y-2">
-                    <div className="flex space-x-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        disabled={index === 0}
-                        onClick={() => moveImage(image.id, "up")}
-                      >
-                        <MoveUp className="h-4 w-4" />
-                        <span className="sr-only">Move up</span>
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        disabled={index === existingImages.length - 1}
-                        onClick={() => moveImage(image.id, "down")}
-                      >
-                        <MoveDown className="h-4 w-4" />
-                        <span className="sr-only">Move down</span>
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => handleDeleteImage(image.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Delete</span>
-                      </Button>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {existingImages
+                .sort((a, b) => a.position - b.position)
+                .map(
+                  (
+                    image,
+                    index // Ensure sorted by position for UI
+                  ) => (
+                    <div
+                      key={image.id}
+                      className="flex flex-col items-center space-y-2 rounded-lg border p-3"
+                    >
+                      <div className="relative h-24 w-24 overflow-hidden rounded-md">
+                        <Image
+                          src={image.url}
+                          alt={image.alt || `Image ${index + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          title="Move Up"
+                          disabled={index === 0}
+                          onClick={() => moveImage(image.id, "up")}
+                        >
+                          <MoveUp className="h-4 w-4" />
+                          <span className="sr-only">Move up</span>
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          title="Move Down"
+                          disabled={index === existingImages.length - 1}
+                          onClick={() => moveImage(image.id, "down")}
+                        >
+                          <MoveDown className="h-4 w-4" />
+                          <span className="sr-only">Move down</span>
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          title="Delete"
+                          onClick={() => handleDeleteImage(image.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Delete</span>
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Position: {image.position + 1}
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      Position: {image.position + 1}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                  )
+                )}
             </div>
           </div>
         )}
 
         {/* Upload New Images */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Add New Images</h3>
+        <div className="space-y-2">
+          <h3 className="text-lg font-medium">
+            Add New Images <span className="text-red-500">*</span>
+          </h3>
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() =>
+              document.getElementById("newImageUploadInput")?.click()
+            }
+            className={`mt-1 flex justify-center rounded-md border-2 border-dashed px-6 pb-6 pt-5 
+              ${isDragging ? "border-indigo-600 bg-indigo-50" : "border-gray-300"}
+              cursor-pointer transition-colors duration-150 ease-in-out hover:border-indigo-500`}
+          >
+            <div className="space-y-1 text-center">
+              <UploadCloud
+                className={`mx-auto h-12 w-12 ${isDragging ? "text-indigo-500" : "text-gray-400"}`}
+              />
+              <div className="flex text-sm text-gray-600">
+                <p className="pl-1">
+                  {isDragging
+                    ? "Drop files here"
+                    : "Drag & drop files here, or click to select"}
+                </p>
+              </div>
+              <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+            </div>
+          </div>
           <input
             type="file"
-            id="newImages"
-            name="newImages"
+            id="newImageUploadInput" // ID for click trigger
+            name="newImages" // This name is used in FormData processing
             accept="image/*"
             multiple
             onChange={handleImageChange}
-            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
+            className="sr-only" // Visually hidden
           />
 
           {/* New image preview section */}
           {newImagePreviews.length > 0 && (
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-5">
               {newImagePreviews.map((preview, index) => (
                 <div key={index} className="relative">
                   <Image
@@ -377,7 +455,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
                   <button
                     type="button"
                     onClick={() => removeNewImage(index)}
-                    className="absolute -right-2 -top-2 rounded-full bg-white text-red-500"
+                    className="absolute -right-2 -top-2 rounded-full bg-white text-red-500 transition-colors hover:text-red-700"
                   >
                     <XCircle size={20} />
                     <span className="sr-only">Remove image</span>
