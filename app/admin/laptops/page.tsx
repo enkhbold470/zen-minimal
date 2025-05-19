@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Pencil, Plus, Trash2 } from "lucide-react"
 
+import { commafy } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -54,7 +55,7 @@ export default async function LaptopsAdminPage() {
             <Card key={laptop.id}>
               <CardHeader className="p-4">
                 <CardTitle className="line-clamp-1">{laptop.title}</CardTitle>
-                <CardDescription>${laptop.price.toFixed(2)}</CardDescription>
+                <CardDescription>₮{commafy(laptop.price)}</CardDescription>
               </CardHeader>
               <CardContent className="p-4 pt-0">
                 {laptop.images.length > 0 ? (

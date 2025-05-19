@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
-import { XCircle } from "lucide-react"
+import { Sparkles, UploadCloud, XCircle } from "lucide-react"
 import { useFormState, useFormStatus } from "react-dom"
 
 import { CreateLaptopState } from "@/types/productTypes"
@@ -33,61 +33,224 @@ export function AddLaptopForm() {
   const [imageFiles, setImageFiles] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
 
+  // State for AI generation
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [aiError, setAiError] = useState<string | null>(null)
+
+  // State for price calculation
+  const [price, setPrice] = useState("")
+  const [discount, setDiscount] = useState("")
+  const [originalPrice, setOriginalPrice] = useState("")
+  const [isDragging, setIsDragging] = useState(false) // For drag-and-drop UI
+
   useEffect(() => {
     if (state.success) {
       formRef.current?.reset() // Reset form on successful submission
       setImageFiles([])
       setImagePreviews([])
+      setPrice("")
+      setDiscount("")
+      setOriginalPrice("")
+      if (formRef.current) {
+        const titleInput = formRef.current.elements.namedItem(
+          "title"
+        ) as HTMLInputElement | null
+        const descriptionTextarea = formRef.current.elements.namedItem(
+          "description"
+        ) as HTMLTextAreaElement | null
+        const specsInput = formRef.current.elements.namedItem(
+          "specs"
+        ) as HTMLInputElement | null
+        const priceInput = formRef.current.elements.namedItem(
+          "price"
+        ) as HTMLInputElement | null
+        const discountInput = formRef.current.elements.namedItem(
+          "discount"
+        ) as HTMLInputElement | null
+        const originalPriceInput = formRef.current.elements.namedItem(
+          "originalPrice"
+        ) as HTMLInputElement | null
+
+        if (titleInput) titleInput.value = ""
+        if (descriptionTextarea) descriptionTextarea.value = ""
+        if (specsInput) specsInput.value = ""
+        if (priceInput) priceInput.value = ""
+        if (discountInput) discountInput.value = ""
+        if (originalPriceInput) originalPriceInput.value = ""
+      }
     }
   }, [state.success])
 
-  // Handle image selection
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files
-    if (selectedFiles && selectedFiles.length > 0) {
-      const newFiles = Array.from(selectedFiles)
-      setImageFiles((prevFiles) => [...prevFiles, ...newFiles])
+  // Calculate original price based on price and discount
+  useEffect(() => {
+    const numericPrice = parseFloat(price)
+    if (isNaN(numericPrice) || numericPrice <= 0) {
+      // If price is not valid, don't attempt calculation, or clear originalPrice
+      // setOriginalPrice(""); // Optionally clear if price is invalid
+      return
+    }
 
-      // Create URL previews
-      const newPreviews = newFiles.map((file) => URL.createObjectURL(file))
+    let calculatedOriginalPrice = numericPrice
+    const discountTrimmed = discount.trim()
+
+    if (discountTrimmed) {
+      if (discountTrimmed.endsWith("%")) {
+        const percentageStr = discountTrimmed
+          .substring(0, discountTrimmed.length - 1)
+          .trim()
+        const percentage = parseFloat(percentageStr)
+        if (!isNaN(percentage) && percentage > 0 && percentage < 100) {
+          calculatedOriginalPrice = numericPrice / (1 - percentage / 100)
+        }
+      } else {
+        // Try to parse as a fixed amount (e.g., "$50" or "50")
+        const amountStr = discountTrimmed.startsWith("$")
+          ? discountTrimmed.substring(1).trim()
+          : discountTrimmed
+        const amount = parseFloat(amountStr)
+        if (!isNaN(amount) && amount > 0) {
+          calculatedOriginalPrice = numericPrice + amount
+        }
+      }
+    }
+    // Update originalPrice state, which will update the input field value
+    // Only update if calculatedOriginalPrice is different from numericPrice (i.e., a valid discount was applied)
+    // or if there's no discount, originalPrice should be the same as price.
+    if (calculatedOriginalPrice !== numericPrice || !discountTrimmed) {
+      setOriginalPrice(
+        calculatedOriginalPrice > 0 ? calculatedOriginalPrice.toFixed(2) : ""
+      )
+    } else if (discountTrimmed && calculatedOriginalPrice === numericPrice) {
+      // This case means discount was present but invalid, so original price should be same as price
+      setOriginalPrice(numericPrice.toFixed(2))
+    }
+  }, [price, discount])
+
+  const processFiles = useCallback((files: FileList | null) => {
+    if (files && files.length > 0) {
+      const newFilesArray = Array.from(files)
+      const validImageFiles = newFilesArray.filter((file) =>
+        file.type.startsWith("image/")
+      )
+
+      setImageFiles((prevFiles) => [...prevFiles, ...validImageFiles])
+
+      const newPreviews = validImageFiles.map((file) =>
+        URL.createObjectURL(file)
+      )
       setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews])
     }
+  }, [])
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    processFiles(e.target.files)
   }
 
-  // Remove an image from the selection
   const removeImage = (index: number) => {
     setImageFiles((prevFiles) => prevFiles.filter((_, i) => i !== index))
-
-    // Revoke the URL object to free memory
     URL.revokeObjectURL(imagePreviews[index])
     setImagePreviews((prevPreviews) =>
       prevPreviews.filter((_, i) => i !== index)
     )
   }
 
-  // Create a FileList from the array of images
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleGenerateWithAI = async () => {
+    if (!formRef.current) return
+    const titleInput = formRef.current.elements.namedItem(
+      "title"
+    ) as HTMLInputElement
+    const productTitle = titleInput?.value
 
-    if (imageFiles.length === 0) {
-      // Display error if no images
+    if (!productTitle?.trim()) {
+      setAiError("Please enter a product title first.")
       return
     }
 
-    // Create a FormData instance from the form
+    setIsGenerating(true)
+    setAiError(null)
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productTitle }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(
+          errorData.error || `API request failed with status ${response.status}`
+        )
+      }
+
+      const data = await response.json()
+
+      if (formRef.current) {
+        const descriptionTextarea = formRef.current.elements.namedItem(
+          "description"
+        ) as HTMLTextAreaElement
+        const specsInput = formRef.current.elements.namedItem(
+          "specs"
+        ) as HTMLInputElement
+
+        if (descriptionTextarea && data.description) {
+          descriptionTextarea.value = data.description
+        }
+        if (specsInput && data.specs) {
+          specsInput.value = data.specs
+        }
+      }
+      if (!data.description && !data.specs) {
+        setAiError(
+          "AI did not return description or specs. Raw: " + JSON.stringify(data)
+        )
+      }
+    } catch (error: any) {
+      console.error("AI generation error:", error)
+      setAiError(error.message || "Failed to generate content.")
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     const formData = new FormData(e.currentTarget)
-
-    // Remove any existing images field
     formData.delete("images")
-
-    // Add each file to the formData
     imageFiles.forEach((file) => {
       formData.append("images", file)
     })
-
-    // Call the form action with the updated formData
     formAction(formData)
   }
+
+  // Drag and drop handlers
+  const handleDragOver = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      setIsDragging(true)
+    },
+    []
+  )
+
+  const handleDragLeave = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      setIsDragging(false)
+    },
+    []
+  )
+
+  const handleDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      setIsDragging(false)
+      processFiles(event.dataTransfer.files)
+    },
+    [processFiles]
+  )
 
   const commonInputClass =
     "mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
@@ -95,18 +258,28 @@ export function AddLaptopForm() {
 
   return (
     <form
-      action={formAction}
       ref={formRef}
       onSubmit={handleSubmit}
       className="mx-auto max-w-2xl space-y-6 rounded-lg bg-white p-8 shadow-md"
     >
       <div>
-        <label
-          htmlFor="title"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Title
-        </label>
+        <div className="flex items-center justify-between">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Title
+          </label>
+          <button
+            type="button"
+            onClick={handleGenerateWithAI}
+            disabled={isGenerating}
+            className="flex items-center rounded-md bg-purple-600 px-3 py-1.5 text-xs text-white transition-colors duration-200 hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+          >
+            <Sparkles size={16} className="mr-1.5" />
+            {isGenerating ? "Generating..." : "Generate with AI"}
+          </button>
+        </div>
         <input
           type="text"
           name="title"
@@ -117,6 +290,7 @@ export function AddLaptopForm() {
         {state.errors?.title && (
           <p className={errorTextClass}>{state.errors.title.join(", ")}</p>
         )}
+        {aiError && <p className={`${errorTextClass} mt-2`}>{aiError}</p>}
       </div>
 
       <div>
@@ -175,6 +349,8 @@ export function AddLaptopForm() {
             step="0.01"
             required
             className={commonInputClass}
+            value={price} // Controlled component
+            onChange={(e) => setPrice(e.target.value)}
           />
           {state.errors?.price && (
             <p className={errorTextClass}>{state.errors.price.join(", ")}</p>
@@ -185,15 +361,18 @@ export function AddLaptopForm() {
             htmlFor="originalPrice"
             className="block text-sm font-medium text-gray-700"
           >
-            Original Price
+            Original Price (auto-calculated)
           </label>
           <input
             type="number"
             name="originalPrice"
             id="originalPrice"
             step="0.01"
-            required
-            className={commonInputClass}
+            required // Should this be required if auto-calculated?
+            className={`${commonInputClass} bg-gray-50`} // Slightly different style for auto-filled
+            value={originalPrice} // Controlled component
+            onChange={(e) => setOriginalPrice(e.target.value)} // Allow manual override
+            readOnly // Or make it readOnly if manual override is not desired immediately
           />
           {state.errors?.originalPrice && (
             <p className={errorTextClass}>
@@ -208,13 +387,16 @@ export function AddLaptopForm() {
           htmlFor="discount"
           className="block text-sm font-medium text-gray-700"
         >
-          Discount (e.g., 10% off, $50 off)
+          Discount (e.g., 10% off, $50 off, or 50)
         </label>
         <input
-          type="text"
+          type="text" // Changed to text to allow "%" or "$"
           name="discount"
           id="discount"
           className={commonInputClass}
+          value={discount} // Controlled component
+          onChange={(e) => setDiscount(e.target.value)}
+          placeholder="e.g. 10% or 50"
         />
         {state.errors?.discount && (
           <p className={errorTextClass}>{state.errors.discount.join(", ")}</p>
@@ -243,24 +425,46 @@ export function AddLaptopForm() {
       <div>
         <label
           htmlFor="images"
-          className="block text-sm font-medium text-gray-700"
+          className="mb-1 block text-sm font-medium text-gray-700"
         >
-          Laptop Images
+          Laptop Images (drag & drop or click)
         </label>
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => document.getElementById("imageUploadInput")?.click()} // Trigger hidden input click
+          className={`mt-1 flex justify-center rounded-md border-2 border-dashed px-6 pb-6 pt-5 
+            ${isDragging ? "border-indigo-600 bg-indigo-50" : "border-gray-300"}
+            cursor-pointer transition-colors duration-150 ease-in-out hover:border-indigo-500`}
+        >
+          <div className="space-y-1 text-center">
+            <UploadCloud
+              className={`mx-auto h-12 w-12 ${isDragging ? "text-indigo-500" : "text-gray-400"}`}
+            />
+            <div className="flex text-sm text-gray-600">
+              <p className="pl-1">
+                {isDragging
+                  ? "Drop files here"
+                  : "Drag & drop files here, or click to select"}
+              </p>
+            </div>
+            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+          </div>
+        </div>
         <input
           type="file"
-          id="images"
-          name="images"
+          id="imageUploadInput" // Added ID for click trigger
+          name="images" // Name might be redundant if handled by state, but good for non-JS
           accept="image/*"
           multiple
           onChange={handleImageChange}
-          className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100"
+          className="sr-only" // Visually hidden, functionality handled by the div
         />
         {state.errors?.images && (
           <p className={errorTextClass}>{state.errors.images.join(", ")}</p>
         )}
 
-        {/* Image preview section */}
         {imagePreviews.length > 0 && (
           <div className="mt-4 grid grid-cols-3 gap-4 sm:grid-cols-4">
             {imagePreviews.map((preview, index) => (
@@ -275,7 +479,7 @@ export function AddLaptopForm() {
                 <button
                   type="button"
                   onClick={() => removeImage(index)}
-                  className="absolute -right-2 -top-2 rounded-full bg-white text-red-500"
+                  className="absolute -right-2 -top-2 rounded-full bg-white text-red-500 transition-colors hover:text-red-700"
                 >
                   <XCircle size={20} />
                   <span className="sr-only">Remove image</span>

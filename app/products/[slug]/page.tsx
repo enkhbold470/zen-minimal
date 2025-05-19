@@ -10,6 +10,7 @@ import ReactMarkdown from "react-markdown"
 import { z } from "zod"
 
 import { Laptop } from "@/types/productTypes"
+import { commafy } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -256,14 +257,14 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <h1 className="text-3xl font-bold">{product.title}</h1>
           <div className="jutify-between mb-2 flex items-center gap-2">
             {product.discount && (
-              <Badge variant="default">{product.discount}</Badge>
+              <Badge variant="destructive">{product.discount}</Badge>
             )}
             <span className="text-2xl font-bold text-primary">
-              ${product.price}
+              ₮{commafy(product.price)}
             </span>
             {product.originalPrice && (
               <span className="text-gray-500 line-through">
-                ${product.originalPrice}
+                ₮{commafy(product.originalPrice)}
               </span>
             )}
           </div>
@@ -279,7 +280,12 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             {product.description}
           </ReactMarkdown>
 
-          <Button onClick={handleRequestPurchase} size="lg" className="w-full">
+          <Button
+            onClick={handleRequestPurchase}
+            size="lg"
+            variant="destructive"
+            className="w-full"
+          >
             Худалдан авах хүсэлт илгээх <Send className="ml-2 h-5 w-5" />
           </Button>
 
