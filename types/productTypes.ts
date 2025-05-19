@@ -7,6 +7,7 @@ export interface ImageItem {
 
 export interface Laptop {
   id: number;
+  published: boolean;
   title: string;
   description: string;
   specs: string[];

@@ -145,7 +145,7 @@ export async function updateLaptop(id: number, formData: FormData): Promise<Crea
 }
 
 // GET all laptops for admin (with images)
-export async function getLaptops() {
+export async function getAdminLaptops() {
   try {
     return await prisma.laptop.findMany({
       orderBy: { id: 'desc' },
@@ -154,6 +154,20 @@ export async function getLaptops() {
   } catch (error) {
     console.error('Error getting laptops:', error);
     throw new Error('Failed to fetch laptops');
+  }
+}
+
+// GET only published laptops for public pages (with images)
+export async function getPublishedLaptops() {
+  try {
+    return await prisma.laptop.findMany({
+      where: { published: true },
+      orderBy: { datePublished: 'desc' },
+      include: { images: { orderBy: { position: 'asc' } } },
+    });
+  } catch (error) {
+    console.error('Error getting published laptops:', error);
+    throw new Error('Failed to fetch published laptops');
   }
 }
 
@@ -207,5 +221,22 @@ export async function deleteImage(id: number) {
   } catch (error) {
     console.error('Error deleting image:', error);
     return { success: false, error: 'Failed to delete image' };
+  }
+}
+
+// TOGGLE publish status
+export async function toggleLaptopPublishedStatus(id: number, currentStatus: boolean) {
+  try {
+    await prisma.laptop.update({
+      where: { id },
+      data: { published: !currentStatus },
+    });
+    revalidatePath('/admin/laptops');
+    revalidatePath('/products'); // Revalidate products page as well
+    revalidatePath('/'); // Revalidate home page if it shows products
+    return { success: true, newState: !currentStatus };
+  } catch (error) {
+    console.error('Error toggling laptop published status:', error);
+    return { success: false, error: 'Failed to update published status' };
   }
 } 

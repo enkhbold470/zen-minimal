@@ -103,3 +103,7 @@ export const getYoutubeId = (url: string): string | null => {
   return videoId
 }
 
+
+export const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text)
+}

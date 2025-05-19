@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { getLaptops } from "@/app/actions"
+import { getPublishedLaptops } from "@/app/actions"
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Laptop[]>([])
@@ -22,7 +22,7 @@ export default function ProductsPage() {
     const fetchProducts = async () => {
       try {
         setIsLoading(true)
-        const data = await getLaptops()
+        const data = await getPublishedLaptops()
 
         if (!data || !Array.isArray(data)) {
           setProducts([])
