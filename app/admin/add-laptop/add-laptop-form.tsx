@@ -275,7 +275,7 @@ export function AddLaptopForm() {
             type="button"
             onClick={handleGenerateWithAI}
             disabled={isGenerating}
-            className="flex items-center rounded-md bg-purple-600 px-3 py-1.5 text-xs  transition-colors duration-200 hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+            className="flex items-center rounded-md bg-purple-600 px-3 py-1.5 text-xs text-white transition-colors duration-200 hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-400"
           >
             <Sparkles size={16} className="mr-1.5" />
             {isGenerating ? "Generating..." : "Generate with AI"}
