@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma:generate": "prisma generate",
+    "prisma:generate": "prisma generate --no-engine",
     "prisma:studio": "prisma studio",
     "prisma:push": "prisma db push",
     "prisma:migrate:dev": "prisma migrate dev",
