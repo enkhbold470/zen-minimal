@@ -194,7 +194,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className="mx-auto max-w-3xl space-y-8 rounded-lg bg-white p-8 shadow-md"
+      className="mx-auto max-w-3xl space-y-8 rounded-lg   p-8 shadow-md"
     >
       <div className="space-y-6">
         <div>
@@ -203,10 +203,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
         </div>
 
         <div>
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="title" className="block text-sm font-medium  ">
             Title <span className="text-red-500">*</span>
           </label>
           <input
@@ -220,10 +217,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
         </div>
 
         <div>
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="description" className="block text-sm font-medium  ">
             Description <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -237,10 +231,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
         </div>
 
         <div>
-          <label
-            htmlFor="specs"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="specs" className="block text-sm font-medium  ">
             Specifications (comma-separated){" "}
             <span className="text-red-500">*</span>
           </label>
@@ -257,10 +248,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
-            <label
-              htmlFor="price"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="price" className="block text-sm font-medium  ">
               Price <span className="text-red-500">*</span>
             </label>
             <input
@@ -276,7 +264,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
           <div>
             <label
               htmlFor="originalPrice"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium  "
             >
               Original Price <span className="text-red-500">*</span>
             </label>
@@ -293,10 +281,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
         </div>
 
         <div>
-          <label
-            htmlFor="discount"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="discount" className="block text-sm font-medium  ">
             Discount (e.g., 10% off, $50 off)
           </label>
           <input
@@ -309,10 +294,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
         </div>
 
         <div>
-          <label
-            htmlFor="videoUrl"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="videoUrl" className="block text-sm font-medium  ">
             YouTube Video URL
           </label>
           <input
@@ -420,14 +402,16 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
               <UploadCloud
                 className={`mx-auto h-12 w-12 ${isDragging ? "text-indigo-500" : "text-gray-400"}`}
               />
-              <div className="flex text-sm text-gray-600">
+              <div className="flex text-sm text-foreground">
                 <p className="pl-1">
                   {isDragging
                     ? "Drop files here"
                     : "Drag & drop files here, or click to select"}
                 </p>
               </div>
-              <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+              <p className="text-xs text-foreground">
+                PNG, JPG, GIF up to 10MB
+              </p>
             </div>
           </div>
           <input
@@ -455,7 +439,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
                   <button
                     type="button"
                     onClick={() => removeNewImage(index)}
-                    className="absolute -right-2 -top-2 rounded-full bg-white text-red-500 transition-colors hover:text-red-700"
+                    className="absolute -right-2 -top-2 rounded-full   text-red-500 transition-colors hover:text-red-700"
                   >
                     <XCircle size={20} />
                     <span className="sr-only">Remove image</span>

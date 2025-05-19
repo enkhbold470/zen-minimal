@@ -6,6 +6,7 @@ import { Sparkles, UploadCloud, XCircle } from "lucide-react"
 import { useFormState, useFormStatus } from "react-dom"
 
 import { CreateLaptopState } from "@/types/productTypes"
+import { Button } from "@/components/ui/button"
 import { createLaptop } from "@/app/actions"
 
 const initialState: CreateLaptopState = {
@@ -17,13 +18,13 @@ const initialState: CreateLaptopState = {
 function SubmitButton() {
   const { pending } = useFormStatus()
   return (
-    <button
+    <Button
       type="submit"
       disabled={pending}
-      className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-white transition-colors duration-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+      className="mt-4 w-full rounded-md bg-primary py-8 text-xl font-bold text-primary-foreground"
     >
-      {pending ? "Adding Laptop..." : "Add Laptop"}
-    </button>
+      {pending ? "Laptop нэмэж байна..." : "Laptop нэмэх"}
+    </Button>
   )
 }
 
@@ -260,13 +261,13 @@ export function AddLaptopForm() {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className="mx-auto max-w-2xl space-y-6 rounded-lg bg-white p-8 shadow-md"
+      className="mx-auto max-w-2xl space-y-6 rounded-lg border p-8 shadow-md"
     >
       <div>
         <div className="flex items-center justify-between">
           <label
             htmlFor="title"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-foreground"
           >
             Title <span className="text-red-500">*</span>
           </label>
@@ -274,7 +275,7 @@ export function AddLaptopForm() {
             type="button"
             onClick={handleGenerateWithAI}
             disabled={isGenerating}
-            className="flex items-center rounded-md bg-purple-600 px-3 py-1.5 text-xs text-white transition-colors duration-200 hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+            className="flex items-center rounded-md bg-purple-600 px-3 py-1.5 text-xs  transition-colors duration-200 hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-400"
           >
             <Sparkles size={16} className="mr-1.5" />
             {isGenerating ? "Generating..." : "Generate with AI"}
@@ -294,10 +295,7 @@ export function AddLaptopForm() {
       </div>
 
       <div>
-        <label
-          htmlFor="description"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="description" className="block text-sm font-medium  ">
           Description <span className="text-red-500">*</span>
         </label>
         <textarea
@@ -315,10 +313,7 @@ export function AddLaptopForm() {
       </div>
 
       <div>
-        <label
-          htmlFor="specs"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="specs" className="block text-sm font-medium  ">
           Specifications (comma-separated){" "}
           <span className="text-red-500">*</span>
         </label>
@@ -337,10 +332,7 @@ export function AddLaptopForm() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
-          <label
-            htmlFor="price"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="price" className="block text-sm font-medium  ">
             Price <span className="text-red-500">*</span>
           </label>
           <input
@@ -360,7 +352,7 @@ export function AddLaptopForm() {
         <div>
           <label
             htmlFor="originalPrice"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium  "
           >
             Original Price (auto-calculated){" "}
             <span className="text-red-500">*</span>
@@ -371,7 +363,7 @@ export function AddLaptopForm() {
             id="originalPrice"
             step="0.01"
             required // Should this be required if auto-calculated?
-            className={`${commonInputClass} bg-gray-50`} // Slightly different style for auto-filled
+            className={`${commonInputClass} opacity-50 `} // Slightly different style for auto-filled
             value={originalPrice} // Controlled component
             onChange={(e) => setOriginalPrice(e.target.value)} // Allow manual override
             readOnly // Or make it readOnly if manual override is not desired immediately
@@ -385,10 +377,7 @@ export function AddLaptopForm() {
       </div>
 
       <div>
-        <label
-          htmlFor="discount"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="discount" className="block text-sm font-medium  ">
           Discount (e.g., 10% off, $50 off, or 50){" "}
           <span className="text-red-500">*</span>
         </label>
@@ -409,7 +398,7 @@ export function AddLaptopForm() {
       <div>
         <label
           htmlFor="videoUrl"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-foreground"
         >
           YouTube Video URL
         </label>
@@ -426,10 +415,7 @@ export function AddLaptopForm() {
       </div>
 
       <div>
-        <label
-          htmlFor="images"
-          className="mb-1 block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="images" className="mb-1 block text-sm font-medium  ">
           Laptop Images (drag & drop or click){" "}
           <span className="text-red-500">*</span>
         </label>
@@ -446,14 +432,14 @@ export function AddLaptopForm() {
             <UploadCloud
               className={`mx-auto h-12 w-12 ${isDragging ? "text-indigo-500" : "text-gray-400"}`}
             />
-            <div className="flex text-sm text-gray-600">
+            <div className="flex text-sm text-foreground">
               <p className="pl-1">
                 {isDragging
                   ? "Drop files here"
                   : "Drag & drop files here, or click to select"}
               </p>
             </div>
-            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+            <p className="text-xs text-foreground">PNG, JPG, GIF up to 10MB</p>
           </div>
         </div>
         <input
