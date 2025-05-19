@@ -172,7 +172,7 @@ export default function ProductsPage() {
                     </span>
                   </div>
                 </CardContent>
-                <CardFooter className="mt-auto border-t p-4 pt-0">
+                <CardFooter className="mt-auto p-4 pt-0">
                   <Button
                     variant="default"
                     asChild

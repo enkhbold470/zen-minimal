@@ -10,7 +10,12 @@ import ReactMarkdown from "react-markdown"
 import { z } from "zod"
 
 import { Laptop } from "@/types/productTypes"
-import { commafy, getYoutubeEmbedUrl, getYoutubeId } from "@/lib/utils"
+import {
+  checkPercentage,
+  commafy,
+  getYoutubeEmbedUrl,
+  getYoutubeId,
+} from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -230,10 +235,8 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         </div>
         <div className="space-y-6">
           <h1 className="text-3xl font-bold">{product.title}</h1>
-          <div className="jutify-between mb-2 flex items-center gap-2">
-            {product.discount && (
-              <Badge variant="destructive">{commafy(product.discount)}₮</Badge>
-            )}
+          <div className="mb-2 flex items-center gap-2">
+            {/* this is price */}
             <span className="text-2xl font-bold text-primary">
               {commafy(product.price)}₮
             </span>
@@ -241,6 +244,18 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               <span className="text-gray-500 line-through">
                 {commafy(product.originalPrice)}₮
               </span>
+            )}
+
+            {/* this is discount badge */}
+            {product.discount && checkPercentage(product.discount) && (
+              <Badge variant="outline" className="text-xl">
+                {product.discount} Хямдралтай
+              </Badge>
+            )}
+            {product.discount && !checkPercentage(product.discount) && (
+              <Badge variant="outline" className="text-xl">
+                {commafy(product.discount)}₮ Хямдралтай
+              </Badge>
             )}
           </div>
           <div>

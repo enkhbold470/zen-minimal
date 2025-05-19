@@ -4,6 +4,16 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+// find % from the string 
+export const checkPercentage = (num:  string) => {
+  const percentage = num.search("%")
+  if (percentage !== -1) {
+    return true
+  }
+  return false
+}
+
+
 
 export function commafy( num: number | string ) {
   if (typeof num === "string") {
