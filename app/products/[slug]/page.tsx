@@ -10,7 +10,7 @@ import ReactMarkdown from "react-markdown"
 import { z } from "zod"
 
 import { Laptop } from "@/types/productTypes"
-import { commafy } from "@/lib/utils"
+import { commafy, getYoutubeEmbedUrl, getYoutubeId } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -47,80 +47,6 @@ const formSchema = z.object({
   laptopChoice: z.string(),
 })
 
-const getYoutubeEmbedUrl = (url: string): string | null => {
-  if (!url) return null
-  try {
-    const urlObj = new URL(url)
-    if (
-      urlObj.hostname === "www.youtube.com" ||
-      urlObj.hostname === "youtube.com"
-    ) {
-      if (urlObj.pathname === "/watch" || urlObj.pathname === "/") {
-        const videoId = urlObj.searchParams.get("v")
-        return videoId ? `https://www.youtube.com/embed/${videoId}` : null
-      } else if (urlObj.pathname.startsWith("/embed/")) {
-        return url // Already an embed URL
-      }
-    } else if (urlObj.hostname === "youtu.be") {
-      const videoId = urlObj.pathname.substring(1)
-      return videoId ? `https://www.youtube.com/embed/${videoId}` : null
-    }
-  } catch (error) {
-    console.error("Error parsing video URL:", error)
-    return null
-  }
-  return null // Not a recognized YouTube URL
-}
-
-const getYoutubeId = (url: string): string | null => {
-  if (!url) return null
-
-  let videoId: string | null = null
-
-  try {
-    const parsedUrl = new URL(url)
-    const hostname = parsedUrl.hostname
-    const pathname = parsedUrl.pathname
-
-    if (hostname.includes("youtube.com")) {
-      if (pathname === "/watch") {
-        videoId = parsedUrl.searchParams.get("v")
-      } else if (pathname.startsWith("/shorts/")) {
-        videoId = pathname.substring("/shorts/".length)
-      } else if (pathname.startsWith("/embed/")) {
-        videoId = pathname.substring("/embed/".length)
-      } else if (parsedUrl.searchParams.get("v")) {
-        // Fallback for youtube.com/?v=ID
-        videoId = parsedUrl.searchParams.get("v")
-      }
-    } else if (hostname.includes("youtu.be")) {
-      videoId = pathname.substring(1) // Remove the leading '/'
-    }
-  } catch (error) {
-    // If URL parsing fails, try regex as a fallback (less robust)
-    console.warn(
-      "URL parsing failed, falling back to regex for YouTube ID extraction:",
-      error
-    )
-    const regex =
-      /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-    const match = url.match(regex)
-    if (match && match[1]) {
-      videoId = match[1]
-    }
-  }
-
-  // Clean up any extra params from the videoId if they exist
-  if (videoId && videoId.includes("?")) {
-    videoId = videoId.split("?")[0]
-  }
-  if (videoId && videoId.includes("&")) {
-    videoId = videoId.split("&")[0]
-  }
-
-  return videoId
-}
-
 export default function ProductPage({ params }: { params: { slug: string } }) {
   const [products, setProducts] = useState<Laptop[]>([])
   const [isSubscribed, setIsSubscribed] = useState(false)
@@ -133,9 +59,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      laptopChoice: "",
       phoneNumber: "",
       email: "",
-      laptopChoice: "",
     },
   })
 
@@ -192,8 +118,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     }
     try {
       setIsLoading(true)
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SHEETS_URL}`, {
+      const response = await fetch(`/api/interest-form`, {
         method: "POST",
         body: JSON.stringify(values),
       })
@@ -307,14 +232,14 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <h1 className="text-3xl font-bold">{product.title}</h1>
           <div className="jutify-between mb-2 flex items-center gap-2">
             {product.discount && (
-              <Badge variant="destructive">{product.discount}</Badge>
+              <Badge variant="destructive">{commafy(product.discount)}₮</Badge>
             )}
             <span className="text-2xl font-bold text-primary">
-              ₮{commafy(product.price)}
+              {commafy(product.price)}₮
             </span>
             {product.originalPrice && (
               <span className="text-gray-500 line-through">
-                ₮{commafy(product.originalPrice)}
+                {commafy(product.originalPrice)}₮
               </span>
             )}
           </div>
@@ -333,8 +258,8 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <Button
             onClick={handleRequestPurchase}
             size="lg"
-            variant="destructive"
-            className="w-full"
+            variant="default"
+            className="w-full text-xl"
           >
             Худалдан авах хүсэлт илгээх <Send className="ml-2 h-5 w-5" />
           </Button>
