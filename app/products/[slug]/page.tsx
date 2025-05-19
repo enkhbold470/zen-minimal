@@ -232,14 +232,14 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <h1 className="text-3xl font-bold">{product.title}</h1>
           <div className="jutify-between mb-2 flex items-center gap-2">
             {product.discount && (
-              <Badge variant="destructive">{product.discount}</Badge>
+              <Badge variant="destructive">{commafy(product.discount)}₮</Badge>
             )}
             <span className="text-2xl font-bold text-primary">
-              ₮{commafy(product.price)}
+              {commafy(product.price)}₮
             </span>
             {product.originalPrice && (
               <span className="text-gray-500 line-through">
-                ₮{commafy(product.originalPrice)}
+                {commafy(product.originalPrice)}₮
               </span>
             )}
           </div>
@@ -258,8 +258,8 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <Button
             onClick={handleRequestPurchase}
             size="lg"
-            variant="destructive"
-            className="w-full"
+            variant="default"
+            className="w-full text-xl"
           >
             Худалдан авах хүсэлт илгээх <Send className="ml-2 h-5 w-5" />
           </Button>
