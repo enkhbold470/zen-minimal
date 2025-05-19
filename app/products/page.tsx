@@ -89,8 +89,12 @@ export default function ProductsPage() {
                     className="rounded-md object-cover"
                   />
                 </div>
-                <h2 className="mb-2 text-xl font-semibold">{product.title}</h2>
-                <p className="mb-2 text-gray-600">{product.description}</p>
+                <h2 className="mb-2 text-xl font-semibold">
+                  {product.title.slice(0, 20)}...
+                </h2>
+                <p className="mb-2 text-gray-600">
+                  {product.description.slice(0, 100)}...
+                </p>
                 <div className="mb-2 flex items-baseline">
                   <span className="text-2xl font-bold">
                     {product.price >= 1_000_000
