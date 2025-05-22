@@ -1,7 +1,7 @@
 'use server';
 
 import { put } from '@vercel/blob';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, unstable_cache, revalidateTag } from 'next/cache';
 
 import { prisma } from '@/lib/prisma';
 import { CreateLaptopState } from '@/types/productTypes';
@@ -55,10 +55,8 @@ export async function createLaptop(prevState: CreateLaptopState, formData: FormD
 
     await Promise.all(imagePromises);
 
-    revalidatePath('/admin/add-laptop');
-    revalidatePath('/admin/laptops');
-    revalidatePath('/products');
-    revalidatePath('/');
+    revalidateTag('admin-laptops');
+    revalidateTag('published-laptops');
 
     return { message: 'Laptop added successfully!', success: true };
   } catch (error) {
@@ -125,10 +123,8 @@ export async function updateLaptop(id: number, formData: FormData): Promise<Crea
       await Promise.all(imagePromises.filter(Boolean));
     }
 
-    revalidatePath(`/admin/laptops/${id}/edit`);
-    revalidatePath('/admin/laptops');
-    revalidatePath('/products');
-    revalidatePath('/');
+    revalidateTag('admin-laptops');
+    revalidateTag('published-laptops');
 
     return { 
       message: 'Laptop updated successfully!', 
@@ -145,31 +141,39 @@ export async function updateLaptop(id: number, formData: FormData): Promise<Crea
 }
 
 // GET all laptops for admin (with images)
-export async function getAdminLaptops() {
-  try {
-    return await prisma.laptop.findMany({
-      orderBy: { id: 'desc' },
-      include: { images: { orderBy: { position: 'asc' } } },
-    });
-  } catch (error) {
-    console.error('Error getting laptops:', error);
-    throw new Error('Failed to fetch laptops');
-  }
-}
+export const getAdminLaptops = unstable_cache(
+  async () => {
+    try {
+      return await prisma.laptop.findMany({
+        orderBy: { id: 'desc' },
+        include: { images: { orderBy: { position: 'asc' } } },
+      });
+    } catch (error) {
+      console.error('Error getting laptops:', error);
+      throw new Error('Failed to fetch laptops');
+    }
+  },
+  ['admin-laptops'],
+  { tags: ['admin-laptops'] }
+);
 
 // GET only published laptops for public pages (with images)
-export async function getPublishedLaptops() {
-  try {
-    return await prisma.laptop.findMany({
-      where: { published: true },
-      orderBy: { datePublished: 'desc' },
-      include: { images: { orderBy: { position: 'asc' } } },
-    });
-  } catch (error) {
-    console.error('Error getting published laptops:', error);
-    throw new Error('Failed to fetch published laptops');
-  }
-}
+export const getPublishedLaptops = unstable_cache(
+  async () => {
+    try {
+      return await prisma.laptop.findMany({
+        where: { published: true },
+        orderBy: { datePublished: 'desc' },
+        include: { images: { orderBy: { position: 'asc' } } },
+      });
+    } catch (error) {
+      console.error('Error getting published laptops:', error);
+      throw new Error('Failed to fetch published laptops');
+    }
+  },
+  ['published-laptops'],
+  { tags: ['published-laptops'] }
+);
 
 // DELETE laptop
 export async function deleteLaptop(id: number) {
@@ -179,9 +183,8 @@ export async function deleteLaptop(id: number) {
       where: { id },
     });
     
-    revalidatePath('/admin/laptops');
-    revalidatePath('/products');
-    revalidatePath('/');
+    revalidateTag('admin-laptops');
+    revalidateTag('published-laptops');
     
     return { success: true };
   } catch (error) {
@@ -231,9 +234,8 @@ export async function toggleLaptopPublishedStatus(id: number, currentStatus: boo
       where: { id },
       data: { published: !currentStatus },
     });
-    revalidatePath('/admin/laptops');
-    revalidatePath('/products'); // Revalidate products page as well
-    revalidatePath('/'); // Revalidate home page if it shows products
+    revalidateTag('admin-laptops');
+    revalidateTag('published-laptops');
     return { success: true, newState: !currentStatus };
   } catch (error) {
     console.error('Error toggling laptop published status:', error);
