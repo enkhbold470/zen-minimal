@@ -1,9 +1,10 @@
 'use server';
 
 import { put } from '@vercel/blob';
-import { revalidatePath, unstable_cache, revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 import { prisma } from '@/lib/prisma';
+import { cacheStrategies } from '@/lib/cache-strategies';
 import { CreateLaptopState } from '@/types/productTypes';
 import { LaptopSchema } from './laptopTypes';
 
@@ -140,40 +141,76 @@ export async function updateLaptop(id: number, formData: FormData): Promise<Crea
   }
 }
 
-// GET all laptops for admin (with images)
-export const getAdminLaptops = unstable_cache(
-  async () => {
-    try {
-      return await prisma.laptop.findMany({
-        orderBy: { id: 'desc' },
-        include: { images: { orderBy: { position: 'asc' } } },
-      });
-    } catch (error) {
-      console.error('Error getting laptops:', error);
-      throw new Error('Failed to fetch laptops');
-    }
-  },
-  ['admin-laptops'],
-  { tags: ['admin-laptops'] }
-);
+// GET all laptops for admin (with images) - Using Prisma Accelerate caching
+export async function getAdminLaptops() {
+  try {
+    return await prisma.laptop.findMany({
+      orderBy: { id: 'desc' },
+      include: { images: { orderBy: { position: 'asc' } } },
+      cacheStrategy: cacheStrategies.adminListing,
+    });
+  } catch (error) {
+    console.error('Error getting laptops:', error);
+    throw new Error('Failed to fetch laptops');
+  }
+}
 
-// GET only published laptops for public pages (with images)
-export const getPublishedLaptops = unstable_cache(
-  async () => {
-    try {
-      return await prisma.laptop.findMany({
+// GET only published laptops for public pages (with images) - Aggressive caching for public data
+export async function getPublishedLaptops() {
+  try {
+    return await prisma.laptop.findMany({
+      where: { published: true },
+      orderBy: { datePublished: 'desc' },
+      include: { images: { orderBy: { position: 'asc' } } },
+      cacheStrategy: cacheStrategies.public,
+    });
+  } catch (error) {
+    console.error('Error getting published laptops:', error);
+    throw new Error('Failed to fetch published laptops');
+  }
+}
+
+// GET single laptop with caching - for individual laptop pages
+export async function getLaptopById(id: number) {
+  try {
+    return await prisma.laptop.findUnique({
+      where: { id },
+      include: { images: { orderBy: { position: 'asc' } } },
+      cacheStrategy: cacheStrategies.individualItem,
+    });
+  } catch (error) {
+    console.error('Error getting laptop by ID:', error);
+    throw new Error('Failed to fetch laptop');
+  }
+}
+
+// GET laptop stats for dashboard - short cache for admin data
+export async function getLaptopStats() {
+  try {
+    const [totalLaptops, publishedLaptops, totalImages] = await Promise.all([
+      prisma.laptop.count({
+        cacheStrategy: cacheStrategies.admin
+      }),
+      prisma.laptop.count({
         where: { published: true },
-        orderBy: { datePublished: 'desc' },
-        include: { images: { orderBy: { position: 'asc' } } },
-      });
-    } catch (error) {
-      console.error('Error getting published laptops:', error);
-      throw new Error('Failed to fetch published laptops');
-    }
-  },
-  ['published-laptops'],
-  { tags: ['published-laptops'] }
-);
+        cacheStrategy: cacheStrategies.admin
+      }),
+      prisma.image.count({
+        cacheStrategy: cacheStrategies.admin
+      })
+    ]);
+
+    return {
+      totalLaptops,
+      publishedLaptops,
+      unpublishedLaptops: totalLaptops - publishedLaptops,
+      totalImages,
+    };
+  } catch (error) {
+    console.error('Error getting laptop stats:', error);
+    throw new Error('Failed to fetch laptop statistics');
+  }
+}
 
 // DELETE laptop
 export async function deleteLaptop(id: number) {
