@@ -1,11 +1,11 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { MoveDown, MoveUp, Trash2, UploadCloud, XCircle } from "lucide-react"
 
-import { EditLaptopFormProps, ImageItem, Laptop } from "@/types/productTypes"
+import { EditLaptopFormProps, ImageItem } from "@/types/productTypes"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { deleteImage, updateImagePositions, updateLaptop } from "@/app/actions"

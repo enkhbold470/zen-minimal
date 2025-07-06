@@ -1,19 +1,20 @@
+// lib/prisma.ts
 import { PrismaClient } from '@prisma/client';
-import { withAccelerate } from "@prisma/extension-accelerate";
 
-declare global {
-  var prisma: ReturnType<typeof createPrismaClient> | undefined;
+const globalForPrisma = globalThis as typeof globalThis & {
+  prisma?: PrismaClient;
+};
+
+function createPrismaClient(): PrismaClient {
+  const baseClient = new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
+
+  return baseClient;
 }
 
-const createPrismaClient = () => 
-  new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  }).$extends(withAccelerate());
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-export const prisma =
-  global.prisma ||
-  createPrismaClient();
-
-if (process.env.NODE_ENV !== 'production') {
-  global.prisma = prisma;
-} 
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}

@@ -1,13 +1,14 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState, useActionState } from "react"
 import Image from "next/image"
 import { Sparkles, UploadCloud, XCircle } from "lucide-react"
-import { useFormState, useFormStatus } from "react-dom"
+
 
 import { CreateLaptopState } from "@/types/productTypes"
 import { Button } from "@/components/ui/button"
 import { createLaptop } from "@/app/actions"
+import { useFormStatus } from "react-dom"
 
 const initialState: CreateLaptopState = {
   message: "",
@@ -29,7 +30,7 @@ function SubmitButton() {
 }
 
 export function AddLaptopForm() {
-  const [state, formAction] = useFormState(createLaptop, initialState)
+  const [state, formAction] = useActionState(createLaptop, initialState)
   const formRef = useRef<HTMLFormElement>(null)
   const [imageFiles, setImageFiles] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
@@ -206,9 +207,9 @@ export function AddLaptopForm() {
           "AI did not return description or specs. Raw: " + JSON.stringify(data)
         )
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("AI generation error:", error)
-      setAiError(error.message || "Failed to generate content.")
+      setAiError(error instanceof Error ? error.message : "Failed to generate content.")
     } finally {
       setIsGenerating(false)
     }
