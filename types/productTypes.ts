@@ -20,9 +20,9 @@ export interface Laptop {
 }
 
 export interface EditLaptopPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export interface CreateLaptopState {

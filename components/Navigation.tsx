@@ -4,12 +4,8 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
-  Contact,
-  Focus,
   Home,
   Menu,
-  Mountain,
-  ShoppingCart,
 } from "lucide-react"
 import { FacebookMessengerIcon } from "react-share"
 
@@ -17,11 +13,8 @@ import { siteConfig } from "@/config/site"
 import { Button } from "@/components/ui/button"
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 import {
   Sheet,

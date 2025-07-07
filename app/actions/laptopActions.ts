@@ -1,10 +1,9 @@
 'use server';
 
 import { put } from '@vercel/blob';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import {  revalidateTag } from 'next/cache';
 
-import { prisma } from '@/lib/prisma';
-import { cacheStrategies } from '@/lib/cache-strategies';
+import {prisma} from '@/lib/prisma';
 import { CreateLaptopState } from '@/types/productTypes';
 import { LaptopSchema } from './laptopTypes';
 
@@ -141,13 +140,12 @@ export async function updateLaptop(id: number, formData: FormData): Promise<Crea
   }
 }
 
-// GET all laptops for admin (with images) - Using Prisma Accelerate caching
+// GET all laptops for admin (with images)
 export async function getAdminLaptops() {
   try {
     return await prisma.laptop.findMany({
       orderBy: { id: 'desc' },
       include: { images: { orderBy: { position: 'asc' } } },
-      cacheStrategy: cacheStrategies.adminListing,
     });
   } catch (error) {
     console.error('Error getting laptops:', error);
@@ -155,14 +153,13 @@ export async function getAdminLaptops() {
   }
 }
 
-// GET only published laptops for public pages (with images) - Aggressive caching for public data
+// GET only published laptops for public pages (with images)
 export async function getPublishedLaptops() {
   try {
     return await prisma.laptop.findMany({
       where: { published: true },
       orderBy: { datePublished: 'desc' },
       include: { images: { orderBy: { position: 'asc' } } },
-      cacheStrategy: cacheStrategies.public,
     });
   } catch (error) {
     console.error('Error getting published laptops:', error);
@@ -170,13 +167,12 @@ export async function getPublishedLaptops() {
   }
 }
 
-// GET single laptop with caching - for individual laptop pages
+// GET single laptop - for individual laptop pages
 export async function getLaptopById(id: number) {
   try {
     return await prisma.laptop.findUnique({
       where: { id },
       include: { images: { orderBy: { position: 'asc' } } },
-      cacheStrategy: cacheStrategies.individualItem,
     });
   } catch (error) {
     console.error('Error getting laptop by ID:', error);
@@ -184,20 +180,15 @@ export async function getLaptopById(id: number) {
   }
 }
 
-// GET laptop stats for dashboard - short cache for admin data
+// GET laptop stats for dashboard
 export async function getLaptopStats() {
   try {
     const [totalLaptops, publishedLaptops, totalImages] = await Promise.all([
-      prisma.laptop.count({
-        cacheStrategy: cacheStrategies.admin
-      }),
+      prisma.laptop.count(),
       prisma.laptop.count({
         where: { published: true },
-        cacheStrategy: cacheStrategies.admin
       }),
-      prisma.image.count({
-        cacheStrategy: cacheStrategies.admin
-      })
+      prisma.image.count()
     ]);
 
     return {

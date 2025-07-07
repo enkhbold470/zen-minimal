@@ -1,20 +1,18 @@
-import "@/styles/globals.css"
-
 import type { Metadata, Viewport } from "next"
 import { Roboto } from "next/font/google"
 import { Analytics } from "@vercel/analytics/react"
 
-import { siteConfig } from "@/config/site"
-import { cn } from "@/lib/utils"
+import { siteConfig } from "@/config/site" // Import siteConfig
+import { cn } from "@/lib/utils" // Import cn function
 import { Toaster } from "@/components/ui/toaster"
 import Footer from "@/components/Footer"
 import Navigation from "@/components/Navigation"
 import { ThemeProvider } from "@/components/theme-provider"
+import "./globals.css"
 
 const roboto = Roboto({ weight: ["300"], subsets: ["cyrillic", "latin"] })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url.base),
   title: {
     default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,

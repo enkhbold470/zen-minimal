@@ -16,13 +16,13 @@ export const siteConfig: SiteConfig = {
     "Зэн Лаптоп Дэлгүүр",
   ],
   url: {
-    base: `${process.env.NEXT_PUBLIC_APP_URL}`,
-    author: "https://zenshop.enk.icu",
+    base: "https://zenstore.enk.icu",
+    author: "https://zenstore.enk.icu",
   },
   links: {
     github: "https://github.com/enkhbold470",
   },
-  ogImage: `${process.env.NEXT_PUBLIC_APP_URL}/og.png`,
+  ogImage: "https://zenstore.enk.icu/og.png",
   about:
     "Зэн Лаптоп Дэлгүүр нь хамгийн сүүлийн үеийн, шилдэг лаптопуудыг санал болгодог онлайн дэлгүүр юм. Бидний зорилго бол хэрэглэгчдэдээ хамгийн чанартай, найдвартай бүтээгдэхүүнийг хүргэх явдал юм.",
   goal: "Бидний зорилго бол үйлчлүүлэгчдийн хэрэгцээг ойлгож, тэдэнд хамгийн тохирсон лаптопуудыг санал болгох, улмаар Монголын хэрэглэгчдэд технологийн дэвшлийг хүртээмжтэй болгох явдал юм.",

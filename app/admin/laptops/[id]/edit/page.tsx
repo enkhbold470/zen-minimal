@@ -6,7 +6,8 @@ import { getLaptopById } from "@/app/actions/laptopActions"
 import { EditLaptopForm } from "./edit-form"
 
 export default async function EditLaptopPage({ params }: EditLaptopPageProps) {
-  const laptopId = parseInt(params.id, 10)
+  const { id } = await params
+  const laptopId = parseInt(id, 10)
 
   // Fetch the laptop with its images using cached function
   const laptop = await getLaptopById(laptopId)

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Copy, Send } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -14,25 +13,21 @@ import {
   checkPercentage,
   commafy,
   copyToClipboard,
-  getYoutubeEmbedUrl,
   getYoutubeId,
 } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -53,12 +48,13 @@ const formSchema = z.object({
   laptopChoice: z.string(),
 })
 
-export default function ProductPage({ params }: { params: { slug: string } }) {
+export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const [products, setProducts] = useState<Laptop[]>([])
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [slug, setSlug] = useState<string>("")
   const { toast } = useToast()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,6 +69,15 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   const handleRequestPurchase = () => setIsDialogOpen(true)
   const closeDialog = () => setIsDialogOpen(false)
+
+  // Handle async params
+  useEffect(() => {
+    const getParams = async () => {
+      const resolvedParams = await params
+      setSlug(resolvedParams.slug)
+    }
+    getParams()
+  }, [params])
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -95,8 +100,8 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   }, [])
 
   const product =
-    !isLoading && products.length > 0
-      ? products.find((p) => p.id == Number(params.slug))
+    !isLoading && products.length > 0 && slug
+      ? products.find((p) => p.id == Number(slug))
       : null
 
   useEffect(() => {
@@ -140,7 +145,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       })
       setIsSubscribed(true)
       closeDialog()
-    } catch (error) {
+    } catch {
       toast({
         title: "Алдаа гарлаа!",
         description: "Хүсэлт илгээх явцад алдаа гарлаа. Дахин оролдоно уу.",
@@ -165,14 +170,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   if (!product) {
     return (
       <div className="flex items-center justify-center text-2xl">
-        Product with ID {params.slug} not found.
+        Product with ID {slug} not found.
       </div>
     )
   }
-
-  const embedUrl = product.videoUrl
-    ? getYoutubeEmbedUrl(product.videoUrl)
-    : null
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -267,9 +268,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               ))}
             </ul>
           </div>
-          <ReactMarkdown className="prose max-w-none">
-            {product.description}
-          </ReactMarkdown>
+          <div className="prose max-w-none">
+            <ReactMarkdown>{product.description}</ReactMarkdown>
+          </div>
           {/* product id */}{" "}
           <span className="text-sm">
             <Button

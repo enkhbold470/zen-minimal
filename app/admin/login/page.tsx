@@ -43,7 +43,7 @@ export default function LoginPage() {
       }
 
       router.push("/admin")
-    } catch (err) {
+    } catch {
       setError("Invalid username or password")
     } finally {
       setIsLoading(false)

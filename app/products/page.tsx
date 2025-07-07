@@ -6,7 +6,6 @@ import Link from "next/link"
 import { Search } from "lucide-react"
 
 import { Laptop } from "@/types/productTypes"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"

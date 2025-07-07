@@ -4,10 +4,10 @@
 import { useEffect, useMemo, useState, useTransition } from "react" // Import useState, useEffect, useMemo, useTransition
 import Image from "next/image"
 import Link from "next/link"
-import { Eye, EyeOff, Pencil, Plus, Search, Trash2 } from "lucide-react" // Import Search icon, Eye, EyeOff
+import { Eye, EyeOff, Pencil, Plus, Search } from "lucide-react" // Import Search icon, Eye, EyeOff
 
 import { Laptop } from "@/types/productTypes" // Import Laptop type
-import { commafy } from "@/lib/utils"
+import { commafy } from "@/lib/utils" // Import commafy function
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -33,7 +33,7 @@ export default function LaptopsAdminPage() {
     try {
       setIsLoading(true)
       const data = await getAdminLaptops()
-      setLaptops(data || [])
+      setLaptops(data as Laptop[])
       setError(null)
     } catch (err) {
       console.error("Failed to fetch laptops:", err)
