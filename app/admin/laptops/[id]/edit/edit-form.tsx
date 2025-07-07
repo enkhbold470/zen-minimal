@@ -382,11 +382,29 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
           </div>
         )}
 
+        {/* Add New Image URLs */}
+        <div className="space-y-2">
+          <h3 className="text-lg font-medium">Add New Image URLs</h3>
+          <textarea
+            name="newImageUrls"
+            id="newImageUrls"
+            rows={3}
+            placeholder="https://example.com/image1.jpg
+https://example.com/image2.jpg
+https://placekeanu.com/500"
+            className={commonInputClass}
+          />
+          <p className="text-xs text-gray-500">
+            Enter image URLs, one per line. These will be added to existing images.
+          </p>
+        </div>
+
         {/* Upload New Images */}
         <div className="space-y-2">
-          <h3 className="text-lg font-medium">
-            Add New Images <span className="text-red-500">*</span>
-          </h3>
+          <h3 className="text-lg font-medium">Upload New Images</h3>
+          <p className="text-xs text-gray-600">
+            <span className="text-red-500">*</span> At least one image (existing, URL, or file upload) is required
+          </p>
           <div
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}

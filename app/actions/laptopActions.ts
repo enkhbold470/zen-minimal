@@ -16,6 +16,7 @@ export async function createLaptop(prevState: CreateLaptopState, formData: FormD
     originalPrice: formData.get('originalPrice'),
     discount: formData.get('discount'),
     videoUrl: formData.get('videoUrl'),
+    imageUrls: formData.get('imageUrls'),
     images: formData.getAll('images'),
   });
 
@@ -27,7 +28,7 @@ export async function createLaptop(prevState: CreateLaptopState, formData: FormD
     };
   }
 
-  const { images, ...laptopData } = validatedFields.data;
+  const { images, imageUrls, ...laptopData } = validatedFields.data;
 
   try {
     // First create the laptop without images
@@ -35,25 +36,47 @@ export async function createLaptop(prevState: CreateLaptopState, formData: FormD
       data: laptopData,
     });
 
-    // Upload each image and create Image records
-    const imagePromises = images.map(async (image: File, index: number) => {
-      const blob = await put(`laptops/${newLaptop.id}/${image.name}`, image, {
-        access: 'public',
-        contentType: image.type,
-      });
+    let currentPosition = 0;
+    const allImagePromises: Promise<unknown>[] = [];
 
-      // Create the image record with position based on index
-      return prisma.image.create({
-        data: {
-          url: blob.url,
-          alt: `${laptopData.title} - Image ${index + 1}`,
-          position: index,
-          laptopId: newLaptop.id,
-        },
+    // Process image URLs first
+    if (imageUrls.length > 0) {
+      const urlPromises = imageUrls.map(async (url: string, index: number) => {
+        return prisma.image.create({
+          data: {
+            url: url,
+            alt: `${laptopData.title} - Image ${index + 1}`,
+            position: currentPosition + index,
+            laptopId: newLaptop.id,
+          },
+        });
       });
-    });
+      allImagePromises.push(...urlPromises);
+      currentPosition += imageUrls.length;
+    }
 
-    await Promise.all(imagePromises);
+    // Process uploaded files
+    if (images.length > 0) {
+      const filePromises = images.map(async (image: File, index: number) => {
+        const blob = await put(`laptops/${newLaptop.id}/${image.name}`, image, {
+          access: 'public',
+          contentType: image.type,
+        });
+
+        // Create the image record with position based on index
+        return prisma.image.create({
+          data: {
+            url: blob.url,
+            alt: `${laptopData.title} - Image ${currentPosition + index + 1}`,
+            position: currentPosition + index,
+            laptopId: newLaptop.id,
+          },
+        });
+      });
+      allImagePromises.push(...filePromises);
+    }
+
+    await Promise.all(allImagePromises);
 
     revalidateTag('admin-laptops');
     revalidateTag('published-laptops');
@@ -89,19 +112,38 @@ export async function updateLaptop(id: number, formData: FormData): Promise<Crea
       data: laptopData,
     });
 
-    // Handle new images if any were uploaded
+    // Get current highest position for new images
+    const lastImage = await prisma.image.findFirst({
+      where: { laptopId: id },
+      orderBy: { position: 'desc' },
+    });
+    
+    let currentPosition = lastImage ? lastImage.position + 1 : 0;
+    const allImagePromises: Promise<unknown>[] = [];
+
+    // Handle new image URLs
+    const imageUrls = formData.get('newImageUrls') as string;
+    if (imageUrls && imageUrls.trim()) {
+      const urls = imageUrls.split('\n').map(url => url.trim()).filter(url => url.length > 0);
+      
+      const urlPromises = urls.map(async (url: string, index: number) => {
+        return prisma.image.create({
+          data: {
+            url: url,
+            alt: `${laptopData.title} - Image ${currentPosition + index + 1}`,
+            position: currentPosition + index,
+            laptopId: id,
+          },
+        });
+      });
+      allImagePromises.push(...urlPromises);
+      currentPosition += urls.length;
+    }
+
+    // Handle new uploaded files
     const images = formData.getAll('newImages') as File[];
     if (images.length > 0 && images[0].size > 0) {
-      // Get current highest position
-      const lastImage = await prisma.image.findFirst({
-        where: { laptopId: id },
-        orderBy: { position: 'desc' },
-      });
-      
-      const startPosition = lastImage ? lastImage.position + 1 : 0;
-      
-      // Upload each new image
-      const imagePromises = images.map(async (image: File, index: number) => {
+      const filePromises = images.map(async (image: File, index: number) => {
         if (image.size === 0) return null; // Skip empty files
         
         const blob = await put(`laptops/${id}/${Date.now()}-${image.name}`, image, {
@@ -113,14 +155,19 @@ export async function updateLaptop(id: number, formData: FormData): Promise<Crea
         return prisma.image.create({
           data: {
             url: blob.url,
-            alt: `${laptopData.title} - Image ${startPosition + index + 1}`,
-            position: startPosition + index,
+            alt: `${laptopData.title} - Image ${currentPosition + index + 1}`,
+            position: currentPosition + index,
             laptopId: id,
           },
         });
       });
 
-      await Promise.all(imagePromises.filter(Boolean));
+      allImagePromises.push(...filePromises.filter(Boolean));
+    }
+
+    // Execute all image creation promises
+    if (allImagePromises.length > 0) {
+      await Promise.all(allImagePromises);
     }
 
     revalidateTag('admin-laptops');

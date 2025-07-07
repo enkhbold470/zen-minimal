@@ -416,10 +416,36 @@ export function AddLaptopForm() {
       </div>
 
       <div>
-        <label htmlFor="images" className="mb-1 block text-sm font-medium  ">
-          Laptop Images (drag & drop or click){" "}
-          <span className="text-red-500">*</span>
+        <label
+          htmlFor="imageUrls"
+          className="block text-sm font-medium text-foreground"
+        >
+          Image URLs (one per line)
         </label>
+        <textarea
+          name="imageUrls"
+          id="imageUrls"
+          rows={3}
+          placeholder="https://example.com/image1.jpg
+https://example.com/image2.jpg
+https://placekeanu.com/500"
+          className={commonInputClass}
+        />
+        {state.errors?.imageUrls && (
+          <p className={errorTextClass}>{state.errors.imageUrls.join(", ")}</p>
+        )}
+        <p className="mt-1 text-xs text-gray-500">
+          Enter image URLs, one per line. These will be combined with uploaded files.
+        </p>
+      </div>
+
+      <div>
+        <label htmlFor="images" className="mb-1 block text-sm font-medium  ">
+          Upload Laptop Images (drag & drop or click)
+        </label>
+        <p className="mb-2 text-xs text-gray-600">
+          <span className="text-red-500">*</span> At least one image (URL or file upload) is required
+        </p>
         <div
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
