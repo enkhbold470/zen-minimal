@@ -35,6 +35,7 @@ export interface CreateLaptopState {
     originalPrice?: string[];
     discount?: string[];
     videoUrl?: string[];
+    imageUrls?: string[];
     images?: string[];
     database?: string[];
   };

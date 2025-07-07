@@ -53,7 +53,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)           
   const [slug, setSlug] = useState<string>("")
   const { toast } = useToast()
 
