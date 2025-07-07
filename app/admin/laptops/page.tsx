@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react" // Import useState, useEffect, useMemo, useTransition
 import Image from "next/image"
 import Link from "next/link"
-import { Eye, EyeOff, Pencil, Plus, Search, Trash2 } from "lucide-react" // Import Search icon, Eye, EyeOff
+import { Eye, EyeOff, Pencil, Plus, Search } from "lucide-react" // Import Search icon, Eye, EyeOff
 
 import { Laptop } from "@/types/productTypes" // Import Laptop type
 import { commafy } from "@/lib/utils" // Import commafy function

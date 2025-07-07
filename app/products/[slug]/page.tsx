@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Copy, Send } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -14,25 +13,21 @@ import {
   checkPercentage,
   commafy,
   copyToClipboard,
-  getYoutubeEmbedUrl,
   getYoutubeId,
 } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -150,7 +145,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       })
       setIsSubscribed(true)
       closeDialog()
-    } catch (error) {
+    } catch {
       toast({
         title: "Алдаа гарлаа!",
         description: "Хүсэлт илгээх явцад алдаа гарлаа. Дахин оролдоно уу.",
@@ -179,10 +174,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       </div>
     )
   }
-
-  const embedUrl = product.videoUrl
-    ? getYoutubeEmbedUrl(product.videoUrl)
-    : null
 
   return (
     <div className="container mx-auto px-4 py-8">

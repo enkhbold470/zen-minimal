@@ -1,4 +1,3 @@
-import Image from "next/image"
 import ReactMarkdown from "react-markdown"
 
 const privacyPolicy = `# Нууцлалын бодлого
@@ -127,19 +126,19 @@ export default function AboutPage() {
     >
       <ReactMarkdown
         components={{
-          h1: ({ node, ...props }) => (
+          h1: ({ ...props }) => (
             <h1 className="mb-4 text-3xl font-bold" {...props} />
           ),
-          h2: ({ node, ...props }) => (
+          h2: ({ ...props }) => (
             <h2 className="mb-4 text-2xl font-semibold" {...props} />
           ),
-          h3: ({ node, ...props }) => (
+          h3: ({ ...props }) => (
             <h3 className="mb-4 text-xl font-medium" {...props} />
           ),
-          strong: ({ node, ...props }) => (
+          strong: ({ ...props }) => (
             <strong className="font-bold" {...props} />
           ),
-          p: ({ node, ...props }) => <p className="mb-4" {...props} />,
+          p: ({ ...props }) => <p className="mb-4" {...props} />,
         }}
       >
         {privacyPolicy}

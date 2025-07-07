@@ -26,7 +26,8 @@ export async function POST(request: Request) {
 
     if (username !== adminUsername || password !== adminPassword) {
       // Clear cookie on failed login attempt if it exists
-      cookies().delete("admin-auth")
+      const cookieStore = await cookies()
+      cookieStore.delete("admin-auth")
       return NextResponse.json(
         { error: "Invalid credentials" },
         { status: 401 }
@@ -34,7 +35,8 @@ export async function POST(request: Request) {
     }
 
     // Set cookie on successful login
-    cookies().set("admin-auth", "true", {
+      const cookieStore = await cookies()
+    cookieStore.set("admin-auth", "true", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/", // Cookie accessible for all paths
@@ -45,7 +47,8 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Login error:", error)
     // Clear cookie on error if it exists
-    cookies().delete("admin-auth")
+      const cookieStore = await cookies()
+    cookieStore.delete("admin-auth")
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

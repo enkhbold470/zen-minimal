@@ -1,5 +1,3 @@
-import { ThemeProvider } from "@/components/theme-provider"
-
 import AdminNavbar from "./adminNavbar"
 
 export default function AdminLayout({
