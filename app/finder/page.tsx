@@ -15,7 +15,6 @@ import {
   SiBlender,
   SiUnity,
   SiUnrealengine,
-  SiVisualstudiocode as SiVscode,
   SiIntellijidea,
   SiPycharm,
   SiWebstorm,
@@ -29,7 +28,7 @@ import {
   SiKubernetes,
   SiAmazon as SiAws,
   SiGooglecloud,
-  SiMicrosoftoffice as SiAzure,
+
   SiSteam,
   SiEpicgames,
   SiOrigin,
@@ -37,7 +36,6 @@ import {
   SiDiscord,
   SiSlack,
   SiZoom,
-  SiMicrosoftoffice as SiTeams,
   SiNotion,
   SiTrello,
   SiJira,
@@ -46,9 +44,22 @@ import {
   SiShopify,
   SiWoocommerce as SiWoo,
   SiMagento,
-  SiOpencart as SiOpencartIcon,
   SiPrestashop
 } from "react-icons/si"
+import {
+  PiMicrosoftExcelLogo,
+
+  PiMicrosoftOutlookLogo,
+
+  PiMicrosoftPowerpointLogo,
+  PiMicrosoftTeamsLogo,
+
+  PiMicrosoftWordLogo,
+
+} from "react-icons/pi"
+import { LiaMicrosoft } from "react-icons/lia"
+import { VscVscode } from "react-icons/vsc";
+
 import { 
   FaLaptop,
   FaDesktop,
@@ -86,7 +97,7 @@ const softwareList: Software[] = [
   { id: "blender", name: "Blender", icon: SiBlender, category: "3D", requirements: { ram: 32, storage: 1000, gpu: "dedicated", cpu: "high-end" } },
 
   // Development
-  { id: "vscode", name: "Visual Studio Code", icon: SiVisualstudiocode, category: "Development", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
+  { id: "vscode", name: "Visual Studio Code", icon: VscVscode, category: "Development", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
   { id: "intellij", name: "IntelliJ IDEA", icon: SiIntellijidea, category: "Development", requirements: { ram: 16, storage: 512, gpu: "integrated", cpu: "modern" } },
   { id: "pycharm", name: "PyCharm", icon: SiPycharm, category: "Development", requirements: { ram: 16, storage: 512, gpu: "integrated", cpu: "modern" } },
   { id: "webstorm", name: "WebStorm", icon: SiWebstorm, category: "Development", requirements: { ram: 16, storage: 512, gpu: "integrated", cpu: "modern" } },
@@ -102,19 +113,21 @@ const softwareList: Software[] = [
   { id: "kubernetes", name: "Kubernetes", icon: SiKubernetes, category: "DevOps", requirements: { ram: 16, storage: 512, gpu: "integrated", cpu: "modern" } },
   { id: "aws", name: "AWS", icon: SiAws, category: "Cloud", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
   { id: "gcp", name: "Google Cloud", icon: SiGooglecloud, category: "Cloud", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
-  { id: "azure", name: "Microsoft Azure", icon: SiMicrosoftazure, category: "Cloud", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
+  { id: "azure", name: "Microsoft Azure", icon: PiMicrosoftExcelLogo, category: "Cloud", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
 
   // Gaming
   { id: "steam", name: "Steam", icon: SiSteam, category: "Gaming", requirements: { ram: 16, storage: 1000, gpu: "dedicated", cpu: "modern" } },
   { id: "epic", name: "Epic Games", icon: SiEpicgames, category: "Gaming", requirements: { ram: 16, storage: 1000, gpu: "dedicated", cpu: "modern" } },
   { id: "origin", name: "Origin", icon: SiOrigin, category: "Gaming", requirements: { ram: 16, storage: 1000, gpu: "dedicated", cpu: "modern" } },
   { id: "battlenet", name: "Battle.net", icon: SiBattleNet, category: "Gaming", requirements: { ram: 16, storage: 1000, gpu: "dedicated", cpu: "modern" } },
+  { id: "unity", name: "Unity", icon: SiUnity, category: "Gaming", requirements: { ram: 16, storage: 1000, gpu: "dedicated", cpu: "modern" } },
+  { id: "unreal", name: "Unreal Engine", icon: SiUnrealengine, category: "Gaming", requirements: { ram: 16, storage: 1000, gpu: "dedicated", cpu: "modern" } },
 
   // Communication & Productivity
   { id: "discord", name: "Discord", icon: SiDiscord, category: "Communication", requirements: { ram: 4, storage: 128, gpu: "integrated", cpu: "basic" } },
   { id: "slack", name: "Slack", icon: SiSlack, category: "Communication", requirements: { ram: 4, storage: 128, gpu: "integrated", cpu: "basic" } },
   { id: "zoom", name: "Zoom", icon: SiZoom, category: "Communication", requirements: { ram: 4, storage: 128, gpu: "integrated", cpu: "basic" } },
-  { id: "teams", name: "Microsoft Teams", icon: SiTeams, category: "Communication", requirements: { ram: 4, storage: 128, gpu: "integrated", cpu: "basic" } },
+  { id: "teams", name: "Microsoft Teams", icon: PiMicrosoftTeamsLogo, category: "Communication", requirements: { ram: 4, storage: 128, gpu: "integrated", cpu: "basic" } },
   { id: "notion", name: "Notion", icon: SiNotion, category: "Productivity", requirements: { ram: 4, storage: 128, gpu: "integrated", cpu: "basic" } },
   { id: "trello", name: "Trello", icon: SiTrello, category: "Productivity", requirements: { ram: 4, storage: 128, gpu: "integrated", cpu: "basic" } },
   { id: "jira", name: "Jira", icon: SiJira, category: "Productivity", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
@@ -125,8 +138,14 @@ const softwareList: Software[] = [
   { id: "shopify", name: "Shopify", icon: SiShopify, category: "E-commerce", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
   { id: "woo", name: "WooCommerce", icon: SiWoo, category: "E-commerce", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
   { id: "magento", name: "Magento", icon: SiMagento, category: "E-commerce", requirements: { ram: 16, storage: 512, gpu: "integrated", cpu: "modern" } },
-  { id: "opencart", name: "OpenCart", icon: SiOpencartIcon, category: "E-commerce", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
+  { id: "opencart", name: "OpenCart", icon: PiMicrosoftExcelLogo, category: "E-commerce", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
   { id: "prestashop", name: "PrestaShop", icon: SiPrestashop, category: "E-commerce", requirements: { ram: 8, storage: 256, gpu: "integrated", cpu: "modern" } },
+
+  // Microsoft Productivity Apps
+  { id: "word", name: "Microsoft Word", icon: PiMicrosoftWordLogo, category: "Productivity", requirements: { ram: 4, storage: 128, gpu: "integrated", cpu: "basic" } },
+  { id: "excel", name: "Microsoft Excel", icon: PiMicrosoftExcelLogo, category: "Productivity", requirements: { ram: 4, storage: 128, gpu: "integrated", cpu: "basic" } },
+  { id: "powerpoint", name: "Microsoft PowerPoint", icon: PiMicrosoftPowerpointLogo, category: "Productivity", requirements: { ram: 4, storage: 128, gpu: "integrated", cpu: "basic" } },
+  { id: "outlook", name: "Microsoft Outlook", icon: PiMicrosoftOutlookLogo, category: "Productivity", requirements: { ram: 4, storage: 128, gpu: "integrated", cpu: "basic" } },
 ]
 
 const categories = [
