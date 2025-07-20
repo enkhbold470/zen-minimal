@@ -1,10 +1,7 @@
 import {
   EmailIcon,
   EmailShareButton,
-  FacebookIcon,
-  FacebookShareButton,
-  LinkedinIcon,
-  LinkedinShareButton,
+
   TelegramIcon,
   TelegramShareButton,
   TwitterIcon,
@@ -19,32 +16,16 @@ import { Laptop } from "@/types/productTypes"
 
 export default function ShareButtons({ product }: { product: Laptop }) {
   return (
-    <div className="mt-6">
+    <div className="mt-6 flex flex-wrap gap-2">
       <h3 className="mb-2 text-lg font-semibold">Хуваалцах:</h3>
-      <div className="flex flex-wrap gap-2">
-        <FacebookShareButton
-          url={typeof window !== "undefined" ? window.location.href : ""}
-          hashtag={
-            product.title
-              ? `#${product.title.replace(/\s+/g, "")}`
-              : "#ZenMinimal"
-          }
-        >
-          <FacebookIcon size={32} round />
-        </FacebookShareButton>
+
         <TwitterShareButton
           url={typeof window !== "undefined" ? window.location.href : ""}
           title={product.title}
         >
           <TwitterIcon size={32} round />
         </TwitterShareButton>
-        <LinkedinShareButton
-          url={typeof window !== "undefined" ? window.location.href : ""}
-          title={product.title}
-          summary={product.description}
-        >
-          <LinkedinIcon size={32} round />
-        </LinkedinShareButton>
+    
         <WhatsappShareButton
           url={typeof window !== "undefined" ? window.location.href : ""}
           title={product.title}
@@ -71,7 +52,6 @@ export default function ShareButtons({ product }: { product: Laptop }) {
         >
           <ViberIcon size={32} round />
         </ViberShareButton>
-      </div>
     </div>
   )
 }

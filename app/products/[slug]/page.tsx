@@ -272,7 +272,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             <ReactMarkdown>{product.description}</ReactMarkdown>
           </div>
           {/* product id */}{" "}
-          <span className="text-sm">
+          {/* <span className="text-sm">
             <Button
               onClick={() => {
                 copyToClipboard(
@@ -292,7 +292,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               </span>
               <Copy className="ml-2 h-5 w-5" />
             </Button>
-          </span>
+          </span> */}
           <Button
             onClick={handleRequestPurchase}
             size="lg"
