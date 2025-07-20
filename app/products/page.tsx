@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { getPublishedLaptops } from "@/app/actions"
+import Breadcrumb from "@/components/Breadcrumb"
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Laptop[]>([])
@@ -101,6 +102,11 @@ export default function ProductsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Breadcrumb
+        items={[
+          { label: "Бүтээгдэхүүнүүд" }
+        ]}
+      />
       <div className="mb-6 flex flex-col items-center justify-between sm:mb-8 sm:flex-row">
         <h1 className="mb-4 text-3xl font-bold sm:mb-0">Манай Дэлгүүрт</h1>
         <div className="relative w-full sm:w-72">

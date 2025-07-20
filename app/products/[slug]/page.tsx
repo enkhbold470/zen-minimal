@@ -36,6 +36,7 @@ import {
 import { Input } from "@/components/ui/input"
 import ShareButtons from "@/components/shareButtons"
 import { getPublishedLaptops } from "@/app/actions"
+import Breadcrumb from "@/components/Breadcrumb"
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -177,6 +178,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Breadcrumb
+        items={[
+          { label: "Бүтээгдэхүүнүүд", href: "/products" },
+          { label: product?.title || "Бүтээгдэхүүн" }
+        ]}
+      />
       <div className="grid gap-8 border-b border-gray-200 pb-8 md:grid-cols-2">
         <div className="space-y-4">
           <div className="relative aspect-square rounded-lg">
