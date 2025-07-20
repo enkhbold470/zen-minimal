@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown"
+import Breadcrumb from "@/components/Breadcrumb"
 
 const privacyPolicy = `# Нууцлалын бодлого
 
@@ -124,6 +125,11 @@ export default function AboutPage() {
       className="container mx-auto px-4 py-8"
       style={{ fontFamily: "Times New Roman, serif", fontSize: "1.125rem" }}
     >
+      <Breadcrumb
+        items={[
+          { label: "Нууцлалын бодлого" }
+        ]}
+      />
       <ReactMarkdown
         components={{
           h1: ({ ...props }) => (
