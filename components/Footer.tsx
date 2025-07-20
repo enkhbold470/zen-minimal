@@ -4,7 +4,7 @@ import { siteConfig } from "@/config/site"
 
 const navigation = [
   { href: "/", label: "Нүүр" },
-  { href: "/privacy-policy", label: "Нууцлалын Бодлого" },
+  // { href: "/privacy-policy", label: "Нууцлалын Бодлого" },
 ]
 
 export default function Footer() {

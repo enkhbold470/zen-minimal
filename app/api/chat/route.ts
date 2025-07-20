@@ -7,7 +7,7 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
   try {
-    const { productTitle } = await req.json();
+    const { productTitle, productDescription } = await req.json();
 
     if (!productTitle) {
       return NextResponse.json(
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     }
 
     const prompt = `
-For the product named "${productTitle}", please generate:
+For the product named "${productTitle}", product description is "${productDescription}", please generate:
 1. A concise and appealing product description.
 2. A comma-separated list of key specifications.
 
