@@ -73,6 +73,10 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Add cursor-pointer to all elements with class 'Button' */
+  .Button, .button, button, [role="button"] {
+    cursor: pointer;
+  }
 }
 
 @theme inline {
@@ -188,5 +192,9 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Add cursor-pointer to all elements with class 'Button' */
+  .Button, .button, button, [role="button"] {
+    cursor: pointer;
   }
 }
