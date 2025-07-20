@@ -6,8 +6,8 @@ import Link from "next/link"
 import {
   Home,
   Menu,
+  Mail,
 } from "lucide-react"
-import { FacebookMessengerIcon } from "react-share"
 
 import { siteConfig } from "@/config/site"
 import { Button } from "@/components/ui/button"
@@ -33,8 +33,8 @@ const navigation = [
 ]
 
 const actionButton = {
-  href: "https://m.me/103962149238180",
-  label: "Холбоо барих",
+  href: "mailto:inky@enk.icu",
+  label: "inky@enk.icu",
 }
 
 export default function Navigation() {
@@ -83,9 +83,9 @@ export default function Navigation() {
               </nav>
             </div>
             <div className="ml-auto flex space-x-4">
-              <Link href={actionButton.href} target="_blank">
+              <Link href={actionButton.href}>
                 <Button variant="outline" className="gap-2 p-2 font-bold">
-                  <FacebookMessengerIcon size={32} round={true} />
+                  <Mail className="h-5 w-5" />
                   {actionButton.label}
                 </Button>
               </Link>
@@ -116,9 +116,9 @@ export default function Navigation() {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="ml-auto flex space-x-4">
-        <Link href={actionButton.href} target="_blank">
+        <Link href={actionButton.href}>
           <Button variant="outline" className="gap-2 p-2 font-bold">
-            <FacebookMessengerIcon size={32} round={true} />
+            <Mail className="h-5 w-5" />
             {actionButton.label}
           </Button>
         </Link>

@@ -1,8 +1,8 @@
 import { SiteConfig } from "@/types"
 
 export const siteConfig: SiteConfig = {
-  name: "Зэн Онлайн Дэлгүүр",
-  author: "zenstore",
+  name: "Zen Online Shop",
+  author: "зэнлаптоп",
   description:
     "Зэн Онлайн Дэлгүүр - Хамгийн сүүлийн үеийн, шилдэг электроникс, гар утас, компьютер, бүтээгдэхүүнүүдийг нэг дороос.",
   keywords: [

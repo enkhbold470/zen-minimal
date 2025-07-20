@@ -1,4 +1,5 @@
 import AdminNavbar from "./adminNavbar"
+import Breadcrumb from "@/components/Breadcrumb"
 
 export default function AdminLayout({
   children,
@@ -8,7 +9,14 @@ export default function AdminLayout({
   return (
     <div>
       <AdminNavbar />
-      <div className="container mx-auto py-10">{children}</div>
+      <div className="container mx-auto py-10">
+        <Breadcrumb
+          items={[
+            { label: "Админ", href: "/admin" }
+          ]}
+        />
+        {children}
+      </div>
     </div>
   )
 }
