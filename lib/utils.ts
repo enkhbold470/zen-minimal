@@ -4,6 +4,83 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+// Price calculation constants
+const TUGRIK_RATE = 3602.00 // 1 USD = 3602.00 MNT
+const CA_TAX_RATE = 0.0825 // 8.25% CA tax rate
+const COMMISSION_FEE = 100 // $100 commission fee
+const SHIPPING_FEE = 20 // $20 shipping fee
+
+// Price calculation interface
+export interface PriceCalculation {
+  basePrice: number
+  taxAmount: number
+  subtotalWithTax: number
+  commissionFee: number
+  shippingFee: number
+  totalUSD: number
+  totalMNT: number
+  discountPercentage: number
+  finalPriceMNT: number
+}
+
+// Calculate price from USD to MNT with all fees
+export const calculatePriceFromUSD = (basePriceUSD: number): PriceCalculation => {
+  const taxAmount = basePriceUSD * CA_TAX_RATE
+  const subtotalWithTax = basePriceUSD + taxAmount
+  const totalUSD = subtotalWithTax + COMMISSION_FEE + SHIPPING_FEE
+  const totalMNT = totalUSD * TUGRIK_RATE
+  
+  // Add up price on final price and call it discount
+  const discountPercentage = 10
+  return {
+    basePrice: basePriceUSD,
+    taxAmount,
+    subtotalWithTax,
+    commissionFee: COMMISSION_FEE,
+    shippingFee: SHIPPING_FEE,
+    totalUSD,
+    totalMNT,
+    discountPercentage,
+    finalPriceMNT: totalMNT
+  }
+}
+
+// Format price in MNT with comma separators
+export const formatMNTPrice = (price: number): string => {
+  return new Intl.NumberFormat('mn-MN', {
+    style: 'currency',
+    currency: 'MNT',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price)
+}
+
+// Format USD price
+export const formatUSDPrice = (price: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(price)
+}
+
+// Test function to verify price calculation
+export const testPriceCalculation = (basePriceUSD: number = 999) => {
+  const calculation = calculatePriceFromUSD(basePriceUSD)
+  console.log('Price Calculation Test:', {
+    basePrice: formatUSDPrice(calculation.basePrice),
+    taxAmount: formatUSDPrice(calculation.taxAmount),
+    commissionFee: formatUSDPrice(calculation.commissionFee),
+    shippingFee: formatUSDPrice(calculation.shippingFee),
+    totalUSD: formatUSDPrice(calculation.totalUSD),
+    totalMNT: formatMNTPrice(calculation.totalMNT),
+    discountPercentage: `${calculation.discountPercentage.toFixed(1)}%`
+  })
+  return calculation
+}
+
 // find % from the string 
 export const checkPercentage = (num:  string) => {
   const percentage = num.search("%")

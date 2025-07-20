@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState, useActionState } from "react"
 import Image from "next/image"
-import { Sparkles, UploadCloud, XCircle } from "lucide-react"
+import { Sparkles, UploadCloud, XCircle, Calculator, DollarSign } from "lucide-react"
 
 
 import { CreateLaptopState } from "@/types/productTypes"
 import { Button } from "@/components/ui/button"
 import { createLaptop } from "@/app/actions"
-import { useFormStatus } from "react-dom"
+import { calculatePriceFromUSD, formatMNTPrice, formatUSDPrice, type PriceCalculation, testPriceCalculation } from "@/lib/utils"
+import { useTransition } from "react"
 
 const initialState: CreateLaptopState = {
   message: "",
@@ -16,21 +17,21 @@ const initialState: CreateLaptopState = {
   success: false,
 }
 
-function SubmitButton() {
-  const { pending } = useFormStatus()
+function SubmitButton({ isPending }: { isPending: boolean }) {
   return (
     <Button
       type="submit"
-      disabled={pending}
+      disabled={isPending}
       className="mt-4 w-full rounded-md bg-primary py-8 text-xl font-bold text-primary-foreground"
     >
-      {pending ? "Laptop нэмэж байна..." : "Laptop нэмэх"}
+      {isPending ? "Laptop нэмэж байна..." : "Laptop нэмэх"}
     </Button>
   )
 }
 
 export function AddLaptopForm() {
   const [state, formAction] = useActionState(createLaptop, initialState)
+  const [isPending, startTransition] = useTransition()
   const formRef = useRef<HTMLFormElement>(null)
   const [imageFiles, setImageFiles] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
@@ -43,7 +44,43 @@ export function AddLaptopForm() {
   const [price, setPrice] = useState("")
   const [discount, setDiscount] = useState("")
   const [originalPrice, setOriginalPrice] = useState("")
+  const [usdPrice, setUsdPrice] = useState("")
+  const [priceCalculation, setPriceCalculation] = useState<PriceCalculation | null>(null)
   const [isDragging, setIsDragging] = useState(false) // For drag-and-drop UI
+
+  // Custom action handler for form submission
+  const handleFormAction = (formData: FormData) => {
+    startTransition(() => {
+      // Add image files to form data
+      formData.delete("images")
+      imageFiles.forEach((file) => {
+        formData.append("images", file)
+      })
+      formAction(formData)
+    })
+  }
+
+  // Demo price calculation on mount
+  useEffect(() => {
+    console.log("🚀 Price Calculator Demo:")
+    testPriceCalculation(999) // Test with $999 USD
+  }, [])
+
+  // Calculate price when USD price changes
+  useEffect(() => {
+    const numericUsdPrice = parseFloat(usdPrice)
+    if (!isNaN(numericUsdPrice) && numericUsdPrice > 0) {
+      const calculation = calculatePriceFromUSD(numericUsdPrice)
+      setPriceCalculation(calculation)
+      
+      // Auto-fill the price fields
+      setPrice(calculation.finalPriceMNT.toFixed(2))
+      setOriginalPrice((calculation.finalPriceMNT * 1.1).toFixed(2))
+      setDiscount(`${calculation.discountPercentage.toFixed(1)}%`)
+    } else {
+      setPriceCalculation(null)
+    }
+  }, [usdPrice])
 
   useEffect(() => {
     if (state.success) {
@@ -53,6 +90,8 @@ export function AddLaptopForm() {
       setPrice("")
       setDiscount("")
       setOriginalPrice("")
+      setUsdPrice("")
+      setPriceCalculation(null)
       if (formRef.current) {
         const titleInput = formRef.current.elements.namedItem(
           "title"
@@ -72,6 +111,9 @@ export function AddLaptopForm() {
         const originalPriceInput = formRef.current.elements.namedItem(
           "originalPrice"
         ) as HTMLInputElement | null
+        const usdPriceInput = formRef.current.elements.namedItem(
+          "usdPrice"
+        ) as HTMLInputElement | null
 
         if (titleInput) titleInput.value = ""
         if (descriptionTextarea) descriptionTextarea.value = ""
@@ -79,54 +121,12 @@ export function AddLaptopForm() {
         if (priceInput) priceInput.value = ""
         if (discountInput) discountInput.value = ""
         if (originalPriceInput) originalPriceInput.value = ""
+        if (usdPriceInput) usdPriceInput.value = ""
       }
     }
   }, [state.success])
 
-  // Calculate original price based on price and discount
-  useEffect(() => {
-    const numericPrice = parseFloat(price)
-    if (isNaN(numericPrice) || numericPrice <= 0) {
-      // If price is not valid, don't attempt calculation, or clear originalPrice
-      // setOriginalPrice(""); // Optionally clear if price is invalid
-      return
-    }
 
-    let calculatedOriginalPrice = numericPrice
-    const discountTrimmed = discount.trim()
-
-    if (discountTrimmed) {
-      if (discountTrimmed.endsWith("%")) {
-        const percentageStr = discountTrimmed
-          .substring(0, discountTrimmed.length - 1)
-          .trim()
-        const percentage = parseFloat(percentageStr)
-        if (!isNaN(percentage) && percentage > 0 && percentage < 100) {
-          calculatedOriginalPrice = numericPrice / (1 - percentage / 100)
-        }
-      } else {
-        // Try to parse as a fixed amount (e.g., "$50" or "50")
-        const amountStr = discountTrimmed.startsWith("$")
-          ? discountTrimmed.substring(1).trim()
-          : discountTrimmed
-        const amount = parseFloat(amountStr)
-        if (!isNaN(amount) && amount > 0) {
-          calculatedOriginalPrice = numericPrice + amount
-        }
-      }
-    }
-    // Update originalPrice state, which will update the input field value
-    // Only update if calculatedOriginalPrice is different from numericPrice (i.e., a valid discount was applied)
-    // or if there's no discount, originalPrice should be the same as price.
-    if (calculatedOriginalPrice !== numericPrice || !discountTrimmed) {
-      setOriginalPrice(
-        calculatedOriginalPrice > 0 ? calculatedOriginalPrice.toFixed(2) : ""
-      )
-    } else if (discountTrimmed && calculatedOriginalPrice === numericPrice) {
-      // This case means discount was present but invalid, so original price should be same as price
-      setOriginalPrice(numericPrice.toFixed(2))
-    }
-  }, [price, discount])
 
   const processFiles = useCallback((files: FileList | null) => {
     if (files && files.length > 0) {
@@ -215,15 +215,7 @@ export function AddLaptopForm() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    formData.delete("images")
-    imageFiles.forEach((file) => {
-      formData.append("images", file)
-    })
-    formAction(formData)
-  }
+
 
   // Drag and drop handlers
   const handleDragOver = useCallback(
@@ -259,269 +251,351 @@ export function AddLaptopForm() {
   const errorTextClass = "mt-1 text-sm text-red-600"
 
   return (
-    <form
-      ref={formRef}
-      onSubmit={handleSubmit}
-      className="mx-auto max-w-2xl space-y-6 rounded-lg border p-8 shadow-md"
-    >
-      <div>
-        <div className="flex items-center justify-between">
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-foreground"
+    <div className="mx-auto max-w-6xl">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        {/* Main Form */}
+        <div className="lg:col-span-2">
+          <form
+            ref={formRef}
+            action={handleFormAction}
+            className="space-y-6 rounded-lg border p-8 shadow-md"
           >
-            Title <span className="text-red-500">*</span>
-          </label>
-          <button
-            type="button"
-            onClick={handleGenerateWithAI}
-            disabled={isGenerating}
-            className="flex items-center rounded-md bg-purple-600 px-3 py-1.5 text-xs text-white transition-colors duration-200 hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-400"
-          >
-            <Sparkles size={16} className="mr-1.5" />
-            {isGenerating ? "Generating..." : "Generate with AI"}
-          </button>
-        </div>
-        <input
-          type="text"
-          name="title"
-          id="title"
-          required
-          className={commonInputClass}
-        />
-        {state.errors?.title && (
-          <p className={errorTextClass}>{state.errors.title.join(", ")}</p>
-        )}
-        {aiError && <p className={`${errorTextClass} mt-2`}>{aiError}</p>}
-      </div>
-
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium  ">
-          Description <span className="text-red-500">*</span>
-        </label>
-        <textarea
-          name="description"
-          id="description"
-          rows={4}
-          required
-          className={commonInputClass}
-        ></textarea>
-        {state.errors?.description && (
-          <p className={errorTextClass}>
-            {state.errors.description.join(", ")}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="specs" className="block text-sm font-medium  ">
-          Specifications (comma-separated){" "}
-          <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          name="specs"
-          id="specs"
-          required
-          className={commonInputClass}
-          placeholder="e.g. 16GB RAM, 512GB SSD, Intel i7"
-        />
-        {state.errors?.specs && (
-          <p className={errorTextClass}>{state.errors.specs.join(", ")}</p>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div>
-          <label htmlFor="price" className="block text-sm font-medium  ">
-            Price <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="number"
-            name="price"
-            id="price"
-            step="0.01"
-            required
-            className={commonInputClass}
-            value={price} // Controlled component
-            onChange={(e) => setPrice(e.target.value)}
-          />
-          {state.errors?.price && (
-            <p className={errorTextClass}>{state.errors.price.join(", ")}</p>
-          )}
-        </div>
-        <div>
-          <label
-            htmlFor="originalPrice"
-            className="block text-sm font-medium  "
-          >
-            Original Price (auto-calculated){" "}
-            <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="number"
-            name="originalPrice"
-            id="originalPrice"
-            step="0.01"
-            required // Should this be required if auto-calculated?
-            className={`${commonInputClass} opacity-50 `} // Slightly different style for auto-filled
-            value={originalPrice} // Controlled component
-            onChange={(e) => setOriginalPrice(e.target.value)} // Allow manual override
-            readOnly // Or make it readOnly if manual override is not desired immediately
-          />
-          {state.errors?.originalPrice && (
-            <p className={errorTextClass}>
-              {state.errors.originalPrice.join(", ")}
-            </p>
-          )}
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="discount" className="block text-sm font-medium  ">
-          Discount (e.g., 10% off, $50 off, or 50){" "}
-          <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text" // Changed to text to allow "%" or "$"
-          name="discount"
-          id="discount"
-          className={commonInputClass}
-          value={discount} // Controlled component
-          onChange={(e) => setDiscount(e.target.value)}
-          placeholder="e.g. 10% or 50"
-        />
-        {state.errors?.discount && (
-          <p className={errorTextClass}>{state.errors.discount.join(", ")}</p>
-        )}
-      </div>
-
-      <div>
-        <label
-          htmlFor="videoUrl"
-          className="block text-sm font-medium text-foreground"
-        >
-          YouTube Video URL
-        </label>
-        <input
-          type="url"
-          name="videoUrl"
-          id="videoUrl"
-          placeholder="https://www.youtube.com/watch?v=..."
-          className={commonInputClass}
-        />
-        {state.errors?.videoUrl && (
-          <p className={errorTextClass}>{state.errors.videoUrl.join(", ")}</p>
-        )}
-      </div>
-
-      <div>
-        <label
-          htmlFor="imageUrls"
-          className="block text-sm font-medium text-foreground"
-        >
-          Image URLs (one per line)
-        </label>
-        <textarea
-          name="imageUrls"
-          id="imageUrls"
-          rows={3}
-          placeholder="https://example.com/image1.jpg
-https://example.com/image2.jpg
-https://placekeanu.com/500"
-          className={commonInputClass}
-        />
-        {state.errors?.imageUrls && (
-          <p className={errorTextClass}>{state.errors.imageUrls.join(", ")}</p>
-        )}
-        <p className="mt-1 text-xs text-gray-500">
-          Enter image URLs, one per line. These will be combined with uploaded files.
-        </p>
-      </div>
-
-      <div>
-        <label htmlFor="images" className="mb-1 block text-sm font-medium  ">
-          Upload Laptop Images (drag & drop or click)
-        </label>
-        <p className="mb-2 text-xs text-gray-600">
-          <span className="text-red-500">*</span> At least one image (URL or file upload) is required
-        </p>
-        <div
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={() => document.getElementById("imageUploadInput")?.click()} // Trigger hidden input click
-          className={`mt-1 flex justify-center rounded-md border-2 border-dashed px-6 pb-6 pt-5 
-            ${isDragging ? "border-indigo-600 bg-indigo-50" : "border-gray-300"}
-            cursor-pointer transition-colors duration-150 ease-in-out hover:border-indigo-500`}
-        >
-          <div className="space-y-1 text-center">
-            <UploadCloud
-              className={`mx-auto h-12 w-12 ${isDragging ? "text-indigo-500" : "text-gray-400"}`}
-            />
-            <div className="flex text-sm text-foreground">
-              <p className="pl-1">
-                {isDragging
-                  ? "Drop files here"
-                  : "Drag & drop files here, or click to select"}
-              </p>
-            </div>
-            <p className="text-xs text-foreground">PNG, JPG, GIF up to 10MB</p>
-          </div>
-        </div>
-        <input
-          type="file"
-          id="imageUploadInput" // Added ID for click trigger
-          name="images" // Name might be redundant if handled by state, but good for non-JS
-          accept="image/*"
-          multiple
-          onChange={handleImageChange}
-          className="sr-only" // Visually hidden, functionality handled by the div
-        />
-        {state.errors?.images && (
-          <p className={errorTextClass}>{state.errors.images.join(", ")}</p>
-        )}
-
-        {imagePreviews.length > 0 && (
-          <div className="mt-4 grid grid-cols-3 gap-4 sm:grid-cols-4">
-            {imagePreviews.map((preview, index) => (
-              <div key={index} className="relative">
-                <Image
-                  src={preview}
-                  alt={`Preview ${index + 1}`}
-                  className="h-24 w-24 rounded-md object-cover"
-                  width={96}
-                  height={96}
-                />
+            <div>
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  Title <span className="text-red-500">*</span>
+                </label>
                 <button
                   type="button"
-                  onClick={() => removeImage(index)}
-                  className="absolute -right-2 -top-2 rounded-full bg-white text-red-500 transition-colors hover:text-red-700"
+                  onClick={handleGenerateWithAI}
+                  disabled={isGenerating}
+                  className="flex items-center rounded-md bg-purple-600 px-3 py-1.5 text-xs text-white transition-colors duration-200 hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-gray-400"
                 >
-                  <XCircle size={20} />
-                  <span className="sr-only">Remove image</span>
+                  <Sparkles size={16} className="mr-1.5" />
+                  {isGenerating ? "Generating..." : "Generate with AI"}
                 </button>
               </div>
-            ))}
+              <input
+                type="text"
+                name="title"
+                id="title"
+                required
+                className={commonInputClass}
+              />
+              {state.errors?.title && (
+                <p className={errorTextClass}>{state.errors.title.join(", ")}</p>
+              )}
+              {aiError && <p className={`${errorTextClass} mt-2`}>{aiError}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium">
+                Description <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                name="description"
+                id="description"
+                rows={4}
+                required
+                className={commonInputClass}
+              ></textarea>
+              {state.errors?.description && (
+                <p className={errorTextClass}>
+                  {state.errors.description.join(", ")}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="specs" className="block text-sm font-medium">
+                Specifications (comma-separated) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="specs"
+                id="specs"
+                required
+                className={commonInputClass}
+                placeholder="e.g. 16GB RAM, 512GB SSD, Intel i7"
+              />
+              {state.errors?.specs && (
+                <p className={errorTextClass}>{state.errors.specs.join(", ")}</p>
+              )}
+            </div>
+
+            {/* USD Price Calculator */}
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Calculator className="h-5 w-5 text-blue-600" />
+                <h3 className="text-lg font-semibold text-blue-900">Price Calculator</h3>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label htmlFor="usdPrice" className="block text-sm font-medium text-blue-900">
+                    Base Price (USD) <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="number"
+                      name="usdPrice"
+                      id="usdPrice"
+                      step="0.01"
+                      placeholder="999.00"
+                      className={`${commonInputClass} pl-10`}
+                      value={usdPrice}
+                      onChange={(e) => setUsdPrice(e.target.value)}
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-blue-700">
+                    Enter the base price in USD to auto-calculate MNT price with fees
+                  </p>
+                </div>
+                <div>
+                  <label htmlFor="price" className="block text-sm font-medium text-blue-900">
+                    Final Price (MNT) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="price"
+                    id="price"
+                    step="0.01"
+                    required
+                    className={`${commonInputClass} bg-white`}
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
+                  {state.errors?.price && (
+                    <p className={errorTextClass}>{state.errors.price.join(", ")}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                <label htmlFor="originalPrice" className="block text-sm font-medium">
+                  Original Price (MNT) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="originalPrice"
+                  id="originalPrice"
+                  step="0.01"
+                  required
+                  className={`${commonInputClass} bg-gray-50`}
+                  value={originalPrice}
+                  onChange={(e) => setOriginalPrice(e.target.value)}
+                  readOnly
+                />
+                {state.errors?.originalPrice && (
+                  <p className={errorTextClass}>
+                    {state.errors.originalPrice.join(", ")}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label htmlFor="discount" className="block text-sm font-medium">
+                  Discount <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="discount"
+                  id="discount"
+                  className={`${commonInputClass} bg-gray-50`}
+                  value={discount}
+                  onChange={(e) => setDiscount(e.target.value)}
+                  placeholder="Auto-calculated"
+                  readOnly
+                />
+                {state.errors?.discount && (
+                  <p className={errorTextClass}>{state.errors.discount.join(", ")}</p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="videoUrl" className="block text-sm font-medium text-foreground">
+                YouTube Video URL
+              </label>
+              <input
+                type="url"
+                name="videoUrl"
+                id="videoUrl"
+                placeholder="https://www.youtube.com/watch?v=..."
+                className={commonInputClass}
+              />
+              {state.errors?.videoUrl && (
+                <p className={errorTextClass}>{state.errors.videoUrl.join(", ")}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="imageUrls" className="block text-sm font-medium text-foreground">
+                Image URLs (one per line)
+              </label>
+              <textarea
+                name="imageUrls"
+                id="imageUrls"
+                rows={3}
+                placeholder="https://example.com/image1.jpg
+https://example.com/image2.jpg
+https://placekeanu.com/500"
+                className={commonInputClass}
+              />
+              {state.errors?.imageUrls && (
+                <p className={errorTextClass}>{state.errors.imageUrls.join(", ")}</p>
+              )}
+              <p className="mt-1 text-xs text-gray-500">
+                Enter image URLs, one per line. These will be combined with uploaded files.
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="images" className="mb-1 block text-sm font-medium">
+                Upload Laptop Images (drag & drop or click)
+              </label>
+              <p className="mb-2 text-xs text-gray-600">
+                <span className="text-red-500">*</span> At least one image (URL or file upload) is required
+              </p>
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => document.getElementById("imageUploadInput")?.click()}
+                className={`mt-1 flex justify-center rounded-md border-2 border-dashed px-6 pb-6 pt-5 
+                  ${isDragging ? "border-indigo-600 bg-indigo-50" : "border-gray-300"}
+                  cursor-pointer transition-colors duration-150 ease-in-out hover:border-indigo-500`}
+              >
+                <div className="space-y-1 text-center">
+                  <UploadCloud
+                    className={`mx-auto h-12 w-12 ${isDragging ? "text-indigo-500" : "text-gray-400"}`}
+                  />
+                  <div className="flex text-sm text-foreground">
+                    <p className="pl-1">
+                      {isDragging
+                        ? "Drop files here"
+                        : "Drag & drop files here, or click to select"}
+                    </p>
+                  </div>
+                  <p className="text-xs text-foreground">PNG, JPG, GIF up to 10MB</p>
+                </div>
+              </div>
+              <input
+                type="file"
+                id="imageUploadInput"
+                name="images"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="sr-only"
+              />
+              {state.errors?.images && (
+                <p className={errorTextClass}>{state.errors.images.join(", ")}</p>
+              )}
+
+              {imagePreviews.length > 0 && (
+                <div className="mt-4 grid grid-cols-3 gap-4 sm:grid-cols-4">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative">
+                      <Image
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        className="h-24 w-24 rounded-md object-cover"
+                        width={96}
+                        height={96}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute -right-2 -top-2 rounded-full bg-white text-red-500 transition-colors hover:text-red-700"
+                      >
+                        <XCircle size={20} />
+                        <span className="sr-only">Remove image</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <SubmitButton isPending={isPending} />
+
+            {state.message && !state.success && (
+              <p className={`mt-4 text-sm ${state.success ? "text-green-600" : "text-red-600"}`}>
+                {state.message}
+              </p>
+            )}
+            {state.success && (
+              <p className={`mt-4 text-sm text-green-600`}>{state.message}</p>
+            )}
+            {state.errors?.database && (
+              <p className={errorTextClass}>{state.errors.database.join(", ")}</p>
+            )}
+          </form>
+        </div>
+
+        {/* Price Calculation Sidebar */}
+        <div className="lg:col-span-1">
+          <div className="sticky top-8 rounded-lg border bg-white p-6 shadow-md">
+            <div className="flex items-center gap-2 mb-4">
+              <Calculator className="h-5 w-5 text-blue-600" />
+              <h3 className="text-lg font-semibold text-gray-900">Price Breakdown</h3>
+            </div>
+            
+            {priceCalculation ? (
+              <div className="space-y-4">
+                <div className="rounded-lg bg-blue-50 p-4">
+                  <h4 className="font-medium text-blue-900">Base Price</h4>
+                  <p className="text-2xl font-bold text-blue-900">
+                    {formatUSDPrice(priceCalculation.basePrice)}
+                  </p>
+                </div>
+
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">CA Tax (8.25%)</span>
+                    <span className="font-medium">{formatUSDPrice(priceCalculation.taxAmount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Commission Fee</span>
+                    <span className="font-medium">{formatUSDPrice(priceCalculation.commissionFee)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Shipping Fee</span>
+                    <span className="font-medium">{formatUSDPrice(priceCalculation.shippingFee)}</span>
+                  </div>
+                  <div className="border-t pt-2">
+                    <div className="flex justify-between font-semibold">
+                      <span>Total USD</span>
+                      <span>{formatUSDPrice(priceCalculation.totalUSD)}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold text-lg text-blue-600">
+                      <span>Total MNT</span>
+                      <span>{formatMNTPrice(priceCalculation.totalMNT)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg bg-green-50 p-3">
+                  <div className="text-center">
+                    <p className="text-sm text-green-700">Exchange Rate</p>
+                    <p className="text-lg font-bold text-green-700">1 USD = 3,602 MNT</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center text-gray-500">
+                <Calculator className="mx-auto h-12 w-12 mb-2 text-gray-300" />
+                <p className="text-sm">Enter a USD price to see calculation breakdown</p>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
-
-      <SubmitButton />
-
-      {state.message && !state.success && (
-        <p
-          className={`mt-4 text-sm ${state.success ? "text-green-600" : "text-red-600"}`}
-        >
-          {state.message}
-        </p>
-      )}
-      {state.success && (
-        <p className={`mt-4 text-sm text-green-600`}>{state.message}</p>
-      )}
-      {state.errors?.database && (
-        <p className={errorTextClass}>{state.errors.database.join(", ")}</p>
-      )}
-    </form>
+    </div>
   )
 }

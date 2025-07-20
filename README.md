@@ -1,24 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Zen Store
+
+A modern e-commerce platform for laptop sales with AI-powered product management and USD to MNT price calculation.
+
+## Features
+
+- **Price Calculator**: Automatic USD to MNT conversion with CA tax, commission, and shipping fees
+- **AI Product Generation**: Generate product descriptions and specifications using AI
+- **Image Management**: Drag & drop image upload with preview
+- **Admin Panel**: Complete product management system
+- **Responsive Design**: Modern UI with Tailwind CSS
+
+## Price Calculator
+
+The admin panel includes a sophisticated price calculator that:
+
+- Converts USD base prices to MNT using 3602.00 exchange rate
+- Applies 8.25% CA tax
+- Adds $100 commission fee
+- Adds $20 shipping fee
+- Auto-fills price fields and calculates discount percentage
+- Shows detailed breakdown in real-time sidebar
+
+### Example Calculation
+For a $999 USD laptop:
+- Base Price: $999.00
+- CA Tax (8.25%): $82.42
+- Commission Fee: $100.00
+- Shipping Fee: $20.00
+- **Total USD**: $1,201.42
+- **Total MNT**: 4,327,511 MNT
 
 ## Getting Started
 
 First, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Frontend**: Next.js 14 with App Router
+- **Styling**: Tailwind CSS + Shadcn/ui
+- **Icons**: Lucide React
+- **Package Manager**: pnpm
+- **Language**: TypeScript
+
+## Author
+
+**Enkhbold Ganbold** - [GitHub](https://github.com/enkhbold470)
 
 ## Learn More
 
