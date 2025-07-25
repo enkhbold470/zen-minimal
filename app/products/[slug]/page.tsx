@@ -47,6 +47,7 @@ const formSchema = z.object({
   }),
   email: z.string().email({ message: "Зөв и-мэйл хаяг оруулна уу." }),
   laptopChoice: z.string(),
+  productLink: z.string(),
 })
 
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -65,6 +66,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       laptopChoice: "",
       phoneNumber: "",
       email: "",
+      productLink: "",
     },
   })
 
@@ -112,10 +114,12 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           ? product.images[0].url
           : "/logo.svg"
       )
-      form.setValue("laptopChoice", product.title + "?id=" + product.id || "")
+      form.setValue("laptopChoice", product.title || "")
+      form.setValue("productLink", `${process.env.NEXT_PUBLIC_APP_URL}/products/${product.id}`)
     } else {
       setSelectedImage(null)
       form.setValue("laptopChoice", "")
+      form.setValue("productLink", "")
     }
   }, [product, form])
 
@@ -132,7 +136,13 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       setIsLoading(true)
       const response = await fetch(`/api/interest-form`, {
         method: "POST",
-        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...values,
+          productLink: `${process.env.NEXT_PUBLIC_APP_URL}/products/${product.id}`
+        }),
       })
 
       if (!response.ok) {
@@ -278,28 +288,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           <div className="prose max-w-none">
             <ReactMarkdown>{product.description}</ReactMarkdown>
           </div>
-          {/* product id */}{" "}
-          {/* <span className="text-sm">
-            <Button
-              onClick={() => {
-                copyToClipboard(
-                  `${process.env.NEXT_PUBLIC_APP_URL}/products/${product.id}`
-                )
-                toast({
-                  title: "Хуулагдлаа",
-                  description: "Линк амжилттай хуулагдлаа.",
-                })
-              }}
-              className="cursor-pointer"
-              variant="outline"
-            >
-              Бүтээгдэхүүний Регистер ID:{" "}
-              <span className="text-bold text-orange-500">
-                {product.id.toString()}
-              </span>
-              <Copy className="ml-2 h-5 w-5" />
-            </Button>
-          </span> */}
           <Button
             onClick={handleRequestPurchase}
             size="lg"
@@ -316,7 +304,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
         <DialogContent className="sm:max-w-[425px]">
           <Form {...form}>
             <DialogTitle>
-              Бүтээгдэхүүн: {product.title} - Регистер: {product.id}
+              Бүтээгдэхүүн: {product.title}
             </DialogTitle>
             <DialogDescription>Хүсэлтээ бөглөнө үү.</DialogDescription>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

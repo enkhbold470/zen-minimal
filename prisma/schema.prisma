@@ -40,3 +40,13 @@ model Image {
   laptopId Int
   laptop   Laptop  @relation(fields: [laptopId], references: [id], onDelete: Cascade)
 }
+
+model Order {
+  id           Int      @id @default(autoincrement())
+  username     String
+  laptopChoice String
+  phoneNumber  String
+  email        String
+  productLink  String?
+  createdAt    DateTime @default(now())
+}
