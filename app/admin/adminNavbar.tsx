@@ -12,6 +12,9 @@ export default function AdminNavbar() {
         <Link href="/admin/laptops">
           <Button variant="outline">Laptop Үзэх</Button>
         </Link>
+        <Link href="/admin/orders">
+          <Button variant="outline">Захиалга</Button>
+        </Link>
         {/* <Link href="/admin/settings">
           <Button variant="outline">Тогтмол тохиргоо</Button>
         </Link> */}
