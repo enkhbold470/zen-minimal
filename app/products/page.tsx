@@ -211,10 +211,15 @@ export default function ProductsPage() {
                   <p className="line-clamp-1 text-xs text-gray-600 lg:text-sm lg:line-clamp-2">
                     {product.description}
                   </p>
-                  <div className="mt-3 flex items-center justify-between">
+                  <div className="my-3 flex items-center justify-between">
                     <span className="text-lg font-bold text-primary sm:text-xl">
-                      {commafy(Math.round(product.price / 100) * 100)}₮
+                      {commafy(Math.round(product.price / 100) * 100)}
                     </span>
+                    {/* {product.originalPrice && product.originalPrice > product.price && (
+                      <span className="text-xs text-gray-500 line-through sm:text-sm">
+                        ₮{(product.originalPrice / 1_000).toFixed(0)} мян
+                      </span>
+                    )} */}
                   </div>
                 </CardContent>
              
