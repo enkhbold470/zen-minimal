@@ -74,19 +74,11 @@ export default function RootLayout({
           roboto.className
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navigation />
-          {children}
-
-          <Footer />
-          <Analytics />
-          <Toaster />
-        </ThemeProvider>
+        <Navigation />
+        {children}
+        <Footer />
+        <Analytics />
+        <Toaster />
       </body>
     </html>
   )

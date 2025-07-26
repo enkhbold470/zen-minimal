@@ -33,8 +33,8 @@ const navigation = [
 ]
 
 const actionButton = {
-  href: "mailto:inky@enk.icu",
-  label: "inky@enk.icu",
+  href: "mailto:zen@enk.icu",
+  label: "zen@enk.icu",
 }
 
 export default function Navigation() {
@@ -84,12 +84,11 @@ export default function Navigation() {
             </div>
             <div className="ml-auto flex space-x-4">
               <Link href={actionButton.href}>
-                <Button variant="outline" className="gap-2 p-2 font-bold">
-                  <Mail className="h-5 w-5" />
+                <Button variant="outline" className="gap-2 p-2">
+                  <Mail className="h-4 w-4" />
                   {actionButton.label}
                 </Button>
               </Link>
-              <ModeToggle />
             </div>
           </div>
         </SheetContent>
@@ -117,12 +116,11 @@ export default function Navigation() {
       </NavigationMenu>
       <div className="ml-auto flex space-x-4">
         <Link href={actionButton.href}>
-          <Button variant="outline" className="gap-2 p-2 font-bold">
-            <Mail className="h-5 w-5" />
+          <Button variant="outline" className="gap-2 p-2">
+            <Mail className="h-4 w-4" />
             {actionButton.label}
           </Button>
         </Link>
-        <ModeToggle />
       </div>
     </header>
   )

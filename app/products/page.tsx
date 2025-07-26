@@ -11,7 +11,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { getPublishedLaptops } from "@/app/actions"
 import Breadcrumb from "@/components/Breadcrumb"
-
+import { commafy } from "@/lib/utils"
 export default function ProductsPage() {
   const [products, setProducts] = useState<Laptop[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -173,7 +173,7 @@ export default function ProductsPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4 xl:grid-cols-5">
           {filteredProducts.map((product) => {
             const primaryImage =
               product.images && product.images.length > 0
@@ -187,15 +187,15 @@ export default function ProductsPage() {
               : product.title
 
             return (
-              <Card
-                key={product.id}
-                className="group flex flex-col overflow-hidden rounded-xl border-0 bg-white shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-              >
-                <CardContent className="flex-grow p-3 pb-2 sm:p-4 sm:pb-2">
-                  <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-lg sm:mb-4">
-                    <Image
-                      src={imageUrl}
-                      alt={imageAlt}
+              <Link href={`/products/${product.id}`} key={product.id}>
+                <Card
+                  className="group flex flex-col overflow-hidden rounded-xl border-0 bg-white shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+                >
+                  <CardContent className="flex-grow p-3 pb-2 sm:p-4 sm:pb-2">
+                    <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-lg sm:mb-4">
+                      <Image
+                        src={imageUrl}
+                        alt={imageAlt}      
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       priority={true}
@@ -208,34 +208,19 @@ export default function ProductsPage() {
                   >
                     {product.title}
                   </h2>
-                  <p className="mb-3 line-clamp-2 h-10 text-xs text-gray-600 sm:line-clamp-3 sm:h-[60px] sm:text-sm">
-                    {product.description.slice(0, 116)}...
+                  <p className="line-clamp-1 text-xs text-gray-600 lg:text-sm lg:line-clamp-2">
+                    {product.description}
                   </p>
-                  <div className="mb-3 flex items-center justify-between">
+                  <div className="mt-3 flex items-center justify-between">
                     <span className="text-lg font-bold text-primary sm:text-xl">
-                      {product.price >= 1_000_000
-                        ? `₮${(product.price / 1_000_000).toFixed(1)} сая`
-                        : `₮${(product.price / 1_000).toFixed(0)} мян`}
+                      {commafy(Math.round(product.price / 100) * 100)}₮
                     </span>
-                    {product.originalPrice && product.originalPrice > product.price && (
-                      <span className="text-xs text-gray-500 line-through sm:text-sm">
-                        ₮{(product.originalPrice / 1_000).toFixed(0)} мян
-                      </span>
-                    )}
                   </div>
                 </CardContent>
-                <CardFooter className="mt-auto p-3 pt-0 sm:p-4 sm:pt-0">
-                  <Button
-                    variant="default"
-                    asChild
-                    className="w-full rounded-lg bg-primary py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:py-3 sm:text-base"
-                  >
-                    <Link href={`/products/${product.id}`}>Дэлгэрэнгүй үзэх</Link>
-                  </Button>
-                </CardFooter>
+             
               </Card>
-            )
-          })}
+            </Link> 
+           )})}
         </div>
       )}
     </div>
