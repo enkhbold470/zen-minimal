@@ -14,6 +14,7 @@ import {
   commafy,
   copyToClipboard,
   getYoutubeId,
+
 } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Badge } from "@/components/ui/badge"
@@ -256,24 +257,24 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           <h1 className="text-3xl font-bold">{product.title}</h1>
           <div className="mb-2 flex items-center gap-2">
             {/* this is price */}
-            <span className="text-2xl font-bold text-primary">
-              {commafy(product.price)}₮
+            <span className="text-xl lg:text-3xl font-bold text-primary">
+              {commafy(Math.round(product.price / 100) * 100)} ₮
             </span>
-            {product.originalPrice && (
-              <span className="text-gray-500 line-through">
-                {commafy(product.originalPrice)}₮
-              </span>
-            )}
+            <span className="text-sm lg:text-lg text-gray-500 line-through">
+              {commafy(Math.round(product.originalPrice / 100) * 100)} ₮
+            </span>
+
+            
 
             {/* this is discount badge */}
             {product.discount && checkPercentage(product.discount) && (
-              <Badge variant="outline" className="text-xl">
-                {product.discount} Хямдралтай
+              <Badge variant="outline" className="text-xl border-red-500">
+                {product.discount} Хямд
               </Badge>
             )}
             {product.discount && !checkPercentage(product.discount) && (
-              <Badge variant="outline" className="text-xl">
-                {commafy(product.discount)}₮ Хямдралтай
+              <Badge variant="outline" className="text-xl border-red-500">
+                {product.discount} Хямд
               </Badge>
             )}
           </div>

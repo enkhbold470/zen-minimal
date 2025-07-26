@@ -7,8 +7,9 @@ export function cn(...inputs: ClassValue[]) {
 
 // Price calculation constants
 const TUGRIK_RATE = 3602.00 // 1 USD = 3602.00 MNT
-const CA_TAX_RATE = 0.0825 // 8.25% CA tax rate
-const COMMISSION_FEE = 100 // $100 commission fee
+const CA_TAX_RATE = 0.0925 // 9.25% CA tax rate
+const RECYCLE_FEE = 5 // 5% recycle fee
+const COMMISSION_FEE = 0.1 // 10% commission fee
 const SHIPPING_FEE = 20 // $20 shipping fee
 
 // Price calculation interface
@@ -16,6 +17,7 @@ export interface PriceCalculation {
   basePrice: number
   taxAmount: number
   subtotalWithTax: number
+  recycleFee: number
   commissionFee: number
   shippingFee: number
   totalUSD: number
@@ -27,9 +29,11 @@ export interface PriceCalculation {
 // Calculate price from USD to MNT with all fees
 export const calculatePriceFromUSD = (basePriceUSD: number): PriceCalculation => {
   const taxAmount = basePriceUSD * CA_TAX_RATE
-  const subtotalWithTax = basePriceUSD + taxAmount
-  const totalUSD = subtotalWithTax + COMMISSION_FEE + SHIPPING_FEE
-  const totalMNT = totalUSD * TUGRIK_RATE
+  const recycleFee = RECYCLE_FEE
+  const commissionFee = basePriceUSD * COMMISSION_FEE
+  const subtotalWithTax = basePriceUSD + taxAmount + recycleFee
+  const totalUSD = subtotalWithTax + commissionFee + SHIPPING_FEE
+  const totalMNT = Math.round(totalUSD * TUGRIK_RATE) // Rounded to avoid floating point issues
   
   // Add up price on final price and call it discount
   const discountPercentage = 10
@@ -37,7 +41,8 @@ export const calculatePriceFromUSD = (basePriceUSD: number): PriceCalculation =>
     basePrice: basePriceUSD,
     taxAmount,
     subtotalWithTax,
-    commissionFee: COMMISSION_FEE,
+    recycleFee,
+    commissionFee,
     shippingFee: SHIPPING_FEE,
     totalUSD,
     totalMNT,
@@ -46,24 +51,15 @@ export const calculatePriceFromUSD = (basePriceUSD: number): PriceCalculation =>
   }
 }
 
-// Format price in MNT with comma separators
-export const formatMNTPrice = (price: number): string => {
-  return new Intl.NumberFormat('mn-MN', {
-    style: 'currency',
-    currency: 'MNT',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price)
-}
 
 // Format USD price
-export const formatUSDPrice = (price: number): string => {
+export const formatUSDPrice = (price: number | string): string => { 
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(price)
+  }).format(price as number)
 }
 
 // Test function to verify price calculation
@@ -75,7 +71,7 @@ export const testPriceCalculation = (basePriceUSD: number = 999) => {
     commissionFee: formatUSDPrice(calculation.commissionFee),
     shippingFee: formatUSDPrice(calculation.shippingFee),
     totalUSD: formatUSDPrice(calculation.totalUSD),
-    totalMNT: formatMNTPrice(calculation.totalMNT),
+    totalMNT: formatUSDPrice(calculation.totalMNT),
     discountPercentage: `${calculation.discountPercentage.toFixed(1)}%`
   })
   return calculation

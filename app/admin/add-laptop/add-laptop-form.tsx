@@ -8,7 +8,7 @@ import { Sparkles, UploadCloud, XCircle, Calculator, DollarSign } from "lucide-r
 import { CreateLaptopState } from "@/types/productTypes"
 import { Button } from "@/components/ui/button"
 import { createLaptop } from "@/app/actions"
-import { calculatePriceFromUSD, formatMNTPrice, formatUSDPrice, type PriceCalculation, testPriceCalculation } from "@/lib/utils"
+import { calculatePriceFromUSD, formatUSDPrice, commafy, type PriceCalculation, testPriceCalculation } from "@/lib/utils"
 import { useTransition } from "react"
 
 const initialState: CreateLaptopState = {
@@ -73,9 +73,12 @@ export function AddLaptopForm() {
       const calculation = calculatePriceFromUSD(numericUsdPrice)
       setPriceCalculation(calculation)
       
+      // Round to nearest 100
+      const roundedPrice = Math.round(calculation.finalPriceMNT / 100) * 100
+      
       // Auto-fill the price fields
-      setPrice(calculation.finalPriceMNT.toFixed(2))
-      setOriginalPrice((calculation.finalPriceMNT * 1.1).toFixed(2))
+      setPrice(roundedPrice.toFixed(2))
+      setOriginalPrice((roundedPrice * 1.1).toFixed(2))
       setDiscount(`${calculation.discountPercentage.toFixed(1)}%`)
     } else {
       setPriceCalculation(null)
@@ -125,8 +128,6 @@ export function AddLaptopForm() {
       }
     }
   }, [state.success])
-
-
 
   const processFiles = useCallback((files: FileList | null) => {
     if (files && files.length > 0) {
@@ -214,8 +215,6 @@ export function AddLaptopForm() {
       setIsGenerating(false)
     }
   }
-
-
 
   // Drag and drop handlers
   const handleDragOver = useCallback(
@@ -557,8 +556,12 @@ https://placekeanu.com/500"
 
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">CA Tax (8.25%)</span>
+                    <span className="text-gray-600">CA Tax (9.25%)</span>
                     <span className="font-medium">{formatUSDPrice(priceCalculation.taxAmount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Recycle Fee</span>
+                    <span className="font-medium">{formatUSDPrice(priceCalculation.recycleFee)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Commission Fee</span>
@@ -575,7 +578,7 @@ https://placekeanu.com/500"
                     </div>
                     <div className="flex justify-between font-semibold text-lg text-blue-600">
                       <span>Total MNT</span>
-                      <span>{formatMNTPrice(priceCalculation.totalMNT)}</span>
+                      <span> {commafy(priceCalculation.totalMNT)}</span>
                     </div>
                   </div>
                 </div>

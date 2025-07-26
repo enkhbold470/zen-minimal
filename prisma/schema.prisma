@@ -25,7 +25,7 @@ model Laptop {
   description   String
   specs         String[]
   price         Float
-  originalPrice Float
+  originalPrice Float?
   discount      String?
   videoUrl      String?  // YouTube video URL
   datePublished DateTime @default(now())
