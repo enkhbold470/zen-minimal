@@ -12,7 +12,7 @@ export default async function Home() {
   const featuredProducts = products.slice(4,8)
 
   return (
-    <div className="min-h-screen bg-background pt-20 md:pt-0">
+    <div className="min-h-screen bg-background pt-2 md:pt-0">
       {/* Hero Section */}
       <HeroCarousel featuredProducts={featuredProducts} />
 
