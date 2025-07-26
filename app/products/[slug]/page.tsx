@@ -188,58 +188,58 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Breadcrumb
-        items={[
-          { label: "Бүтээгдэхүүнүүд", href: "/products" },
-          { label: product?.title || "Бүтээгдэхүүн" }
-        ]}
-      />
-      <div className="grid gap-8 border-b border-gray-200 pb-8 md:grid-cols-2">
-        <div className="space-y-4">
-          <div className="relative aspect-square rounded-lg">
-            <div className="flex flex-col space-y-4">
-              <div className="space-y-4">
-                <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg border border-gray-200">
-                  <Image
-                    src={selectedImage || "/logo.svg"}
-                    alt={product.title}
-                    className="h-full w-full object-cover"
-                    width={600}
-                    height={600}
-                    priority
-                  />
-                </div>
-                <div className="aspect-w-1 aspect-h-1 grid grid-cols-4 gap-2">
-                  {product.images.map((image) => (
-                    <div
-                      key={image.id}
-                      className={`aspect-square cursor-pointer overflow-hidden rounded-lg border ${
-                        selectedImage === image.url
-                          ? "border-blue-500"
-                          : "border-gray-200"
-                      }`}
-                      onClick={() => setSelectedImage(image.url)}
-                    >
-                      <Image
-                        src={image.url}
-                        alt={image.alt || "Laptop Image"}
-                        className="h-full w-full object-cover"
-                        width={150}
-                        height={150}
-                        priority
-                      />
-                    </div>
-                  ))}
-                </div>
+    <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-8">
+      <div className="mb-4 sm:mb-6">
+        <Breadcrumb
+          items={[
+            { label: "Бүтээгдэхүүнүүд", href: "/products" },
+            { label: product?.title || "Бүтээгдэхүүн" }
+          ]}
+        />
+      </div>
+      <div className="grid gap-6 border-b border-gray-200 pb-6 sm:gap-8 sm:pb-8 lg:grid-cols-2">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="aspect-square overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+              <Image
+                src={selectedImage || "/logo.svg"}
+                alt={product.title}
+                className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                width={600}
+                height={600}
+                priority
+              />
+            </div>
+            {product.images && product.images.length > 1 && (
+              <div className="grid grid-cols-4 gap-2 sm:gap-3">
+                {product.images.map((image) => (
+                  <div
+                    key={image.id}
+                    className={`aspect-square cursor-pointer overflow-hidden rounded-lg border-2 transition-all duration-200 ${
+                      selectedImage === image.url
+                        ? "border-primary shadow-md"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                    onClick={() => setSelectedImage(image.url)}
+                  >
+                    <Image
+                      src={image.url}
+                      alt={image.alt || "Laptop Image"}
+                      className="h-full w-full object-cover transition-transform duration-200 hover:scale-110"
+                      width={150}
+                      height={150}
+                      priority
+                    />
+                  </div>
+                ))}
               </div>
-              <div className="mt-8 ">
-                <h2 className="mb-2 text-xl font-semibold">
-                  Бүтээгдэхүүн видео
-                </h2>
-              </div>
+            )}
+            <div className="mt-6 sm:mt-8">
+              <h2 className="mb-3 text-lg font-semibold sm:text-xl">
+                Бүтээгдэхүүн видео
+              </h2>
               {product.videoUrl && getYoutubeId(product.videoUrl) && (
-                <div className="mb-4 aspect-video w-full overflow-hidden rounded-lg border">
+                <div className="aspect-video w-full overflow-hidden rounded-xl border border-gray-200 shadow-sm">
                   <iframe
                     width="100%"
                     height="100%"
@@ -253,125 +253,155 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             </div>
           </div>
         </div>
-        <div className="space-y-6">
-          <h1 className="text-3xl font-bold">{product.title}</h1>
-          <div className="mb-2 flex items-center gap-2">
-            {/* this is price */}
-            <span className="text-xl lg:text-3xl font-bold text-primary">
-              {commafy(Math.round(product.price / 100) * 100)} ₮
-            </span>
-            <span className="text-sm lg:text-lg text-gray-500 line-through">
-              {commafy(Math.round(product.originalPrice / 100) * 100)} ₮
-            </span>
-
-            
-
-            {/* this is discount badge */}
-            {product.discount && checkPercentage(product.discount) && (
-              <Badge variant="outline" className="text-xl border-red-500">
-                {product.discount} Хямд
-              </Badge>
-            )}
-            {product.discount && !checkPercentage(product.discount) && (
-              <Badge variant="outline" className="text-xl border-red-500">
-                {product.discount} Хямд
-              </Badge>
-            )}
+        <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-3">
+            <h1 className="text-2xl font-bold leading-tight text-gray-900 sm:text-3xl lg:text-4xl">{product.title}</h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-2xl font-bold text-primary sm:text-3xl lg:text-4xl">
+                {commafy(Math.round(product.price / 100) * 100)} ₮
+              </span>
+              {product.originalPrice && product.originalPrice > product.price && (
+                <span className="text-base text-gray-500 line-through sm:text-lg lg:text-xl">
+                  {commafy(Math.round(product.originalPrice / 100) * 100)} ₮
+                </span>
+              )}
+              {product.discount && (
+                <Badge variant="outline" className="border-red-500 text-red-600">
+                  {product.discount} Хямд
+                </Badge>
+              )}
+            </div>
           </div>
-          <div>
-            <h2 className="mb-2 text-xl font-semibold">Онцлог</h2>
-            <ul className="list-disc space-y-1 pl-5">
+          
+          <div className="rounded-xl bg-gray-50 p-4 sm:p-6">
+            <h2 className="mb-3 text-lg font-semibold text-gray-900 sm:text-xl">Онцлог</h2>
+            <ul className="space-y-2">
               {product.specs.map((spec, index) => (
-                <li key={index}>{spec}</li>
+                <li key={index} className="flex items-start gap-2 text-sm sm:text-base">
+                  <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-primary"></span>
+                  <span className="text-gray-700">{spec}</span>
+                </li>
               ))}
             </ul>
           </div>
-          <div className="prose max-w-none">
-            <ReactMarkdown>{product.description}</ReactMarkdown>
+          
+          <div className="rounded-xl bg-white border border-gray-200 p-4 sm:p-6">
+            <h2 className="mb-3 text-lg font-semibold text-gray-900 sm:text-xl">Дэлгэрэнгүй мэдээлэл</h2>
+            <div className="prose prose-sm max-w-none text-gray-700 sm:prose-base">
+              <ReactMarkdown>{product.description}</ReactMarkdown>
+            </div>
           </div>
-          <Button
-            onClick={handleRequestPurchase}
-            size="lg"
-            variant="default"
-            className="w-full text-xl"
-          >
-            Худалдан авах хүсэлт илгээх <Send className="ml-2 h-5 w-5" />
-          </Button>
-          <ShareButtons product={product} />
+          
+          <div className="sticky bottom-4 z-10 space-y-3 rounded-xl bg-white p-4 shadow-lg border border-gray-200 sm:static sm:bg-transparent sm:p-0 sm:shadow-none sm:border-0">
+            <Button
+              onClick={handleRequestPurchase}
+              size="lg"
+              variant="default"
+              className="w-full rounded-xl py-4 text-base font-semibold sm:text-lg"
+            >
+              Худалдан авах хүсэлт илгээх <Send className="ml-2 h-5 w-5" />
+            </Button>
+            <div className="hidden sm:block">
+              <ShareButtons product={product} />
+            </div>
+          </div>
+          
+          <div className="block sm:hidden">
+            <ShareButtons product={product} />
+          </div>
         </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="mx-3 max-h-[90vh] overflow-y-auto rounded-xl sm:mx-auto sm:max-w-[500px]">
           <Form {...form}>
-            <DialogTitle>
-              Бүтээгдэхүүн: {product.title}
-            </DialogTitle>
-            <DialogDescription>Хүсэлтээ бөглөнө үү.</DialogDescription>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Хэрэглэгчийн нэр</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Нэрээ оруулна уу" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Утасны дугаар</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Утасны дугаараа оруулна уу"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>И-мэйл</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="И-мэйл хаягаа оруулна уу"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={closeDialog}
-                  disabled={isLoading && !isSubscribed}
-                >
-                  Цуцлах
-                </Button>
-                <Button type="submit" disabled={isLoading && !isSubscribed}>
-                  {isLoading && !isSubscribed
-                    ? "Илгээж байна..."
-                    : isSubscribed
-                      ? "Илгээгдлээ!"
-                      : "Илгээх"}
-                </Button>
-              </DialogFooter>
-            </form>
+            <div className="space-y-4">
+              <div className="text-center sm:text-left">
+                <DialogTitle className="text-lg font-semibold text-gray-900 sm:text-xl">
+                  Худалдан авах хүсэлт
+                </DialogTitle>
+                <DialogDescription className="mt-1 text-sm text-gray-600 sm:text-base">
+                  {product.title} - Хүсэлтээ бөглөнө үү
+                </DialogDescription>
+              </div>
+              
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700 sm:text-base">Хэрэглэгчийн нэр</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Нэрээ оруулна уу" 
+                          className="rounded-lg py-3 text-base focus:ring-2 focus:ring-primary/20" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs sm:text-sm" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700 sm:text-base">Утасны дугаар</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Утасны дугаараа оруулна уу"
+                          className="rounded-lg py-3 text-base focus:ring-2 focus:ring-primary/20"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs sm:text-sm" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700 sm:text-base">И-мэйл</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="И-мэйл хаягаа оруулна уу"
+                          className="rounded-lg py-3 text-base focus:ring-2 focus:ring-primary/20"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs sm:text-sm" />
+                    </FormItem>
+                  )}
+                />
+                
+                <DialogFooter className="flex-col gap-3 pt-4 sm:flex-row sm:gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={closeDialog}
+                    disabled={isLoading && !isSubscribed}
+                    className="w-full rounded-lg py-3 text-base sm:w-auto"
+                  >
+                    Цуцлах
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={isLoading && !isSubscribed}
+                    className="w-full rounded-lg py-3 text-base font-semibold sm:w-auto"
+                  >
+                    {isLoading && !isSubscribed
+                      ? "Илгээж байна..."
+                      : isSubscribed
+                        ? "Илгээгдлээ!"
+                        : "Илгээх"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </div>
           </Form>
         </DialogContent>
       </Dialog>

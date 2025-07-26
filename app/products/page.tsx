@@ -57,21 +57,36 @@ export default function ProductsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="mb-6 text-3xl font-bold sm:mb-8">Манай Дэлгүүрт</h1>
-        <div className="mb-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-8">
+        <div className="mb-4 sm:mb-6">
+          <div className="h-4 w-32 animate-pulse rounded bg-gray-200"></div>
+        </div>
+        <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          <div className="text-center sm:text-left">
+            <div className="h-8 w-48 animate-pulse rounded bg-gray-200 sm:h-10 sm:w-64"></div>
+            <div className="mt-2 h-4 w-32 animate-pulse rounded bg-gray-100 sm:w-40"></div>
+          </div>
+          <div className="relative w-full sm:w-80 lg:w-96">
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Нэр, тайлбараар хайх..."
-              className="w-full cursor-not-allowed rounded-lg bg-background py-2 pl-10 pr-4 opacity-50"
-              disabled
+              className="w-full cursor-not-allowed rounded-xl bg-background py-3 pl-12 pr-4 text-base opacity-50 shadow-sm"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
-        <div className="flex animate-pulse items-center justify-center text-2xl">
-          Ачааллаж байна...
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="rounded-xl bg-white p-3 shadow-md sm:p-4">
+              <div className="mb-3 aspect-square w-full animate-pulse rounded-lg bg-gray-200 sm:mb-4"></div>
+              <div className="mb-2 h-5 w-full animate-pulse rounded bg-gray-200"></div>
+              <div className="mb-3 h-4 w-3/4 animate-pulse rounded bg-gray-100"></div>
+              <div className="mb-3 h-6 w-1/2 animate-pulse rounded bg-gray-200"></div>
+              <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200"></div>
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -79,42 +94,59 @@ export default function ProductsPage() {
 
   if (!isLoading && error && products.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="mb-6 text-3xl font-bold sm:mb-8">Манай Дэлгүүрт</h1>
-        <div className="mb-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-8">
+        <div className="mb-4 sm:mb-6">
+          <Breadcrumb
+            items={[
+              { label: "Бүтээгдэхүүнүүд" }
+            ]}
+          />
+        </div>
+        <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          <div className="text-center sm:text-left">
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">Манай Дэлгүүрт</h1>
+            <p className="mt-1 text-sm text-gray-600 sm:text-base">Чанартай лаптоп компьютерүүд</p>
+          </div>
+          <div className="relative w-full sm:w-80 lg:w-96">
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Нэр, тайлбараар хайх..."
-              className="w-full rounded-lg bg-background py-2 pl-10 pr-4 focus:border-primary"
+              className="w-full rounded-xl bg-background py-3 pl-12 pr-4 text-base shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
-        <div className="flex items-center justify-center rounded-md bg-destructive/10 p-6 text-xl text-destructive">
-          {error}
+        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl bg-red-50 p-6 text-center sm:p-8">
+          <div className="mb-4 text-4xl">⚠️</div>
+          <h2 className="mb-2 text-lg font-semibold text-red-800 sm:text-xl">Алдаа гарлаа</h2>
+          <p className="text-sm text-red-600 sm:text-base">{error}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Breadcrumb
-        items={[
-          { label: "Бүтээгдэхүүнүүд" }
-        ]}
-      />
-      <div className="mb-6 flex flex-col items-center justify-between sm:mb-8 sm:flex-row">
-        <h1 className="mb-4 text-3xl font-bold sm:mb-0">Манай Дэлгүүрт</h1>
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+    <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-8">
+      <div className="mb-4 sm:mb-6">
+        <Breadcrumb
+          items={[
+            { label: "Бүтээгдэхүүнүүд" }
+          ]}
+        />
+      </div>
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <div className="text-center sm:text-left">
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">Манай Дэлгүүрт</h1>
+          <p className="mt-1 text-sm text-gray-600 sm:text-base">Чанартай лаптоп компьютерүүд</p>
+        </div>
+        <div className="relative w-full sm:w-80 lg:w-96">
+          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Нэр, тайлбараар хайх..."
-            className="w-full rounded-lg bg-background py-2 pl-10 pr-4 focus:border-primary"
+            className="w-full rounded-xl bg-background py-3 pl-12 pr-4 text-base shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -122,16 +154,26 @@ export default function ProductsPage() {
       </div>
 
       {filteredProducts.length === 0 ? (
-        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-          <h2 className="text-xl font-semibold">Илэрц олдсонгүй</h2>
-          <p className="mt-2 text-muted-foreground">
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-6 text-center sm:p-8">
+          <div className="mb-4 text-5xl sm:text-6xl">🔍</div>
+          <h2 className="mb-2 text-lg font-semibold text-gray-800 sm:text-xl">Илэрц олдсонгүй</h2>
+          <p className="max-w-md text-sm text-gray-600 sm:text-base">
             {searchTerm
-              ? `"${searchTerm}" гэсэн хайлтад тохирох бүтээгдэхүүн олдсонгүй.`
-              : "Одоогоор бүтээгдэхүүн байхгүй байна."}
+              ? `"${searchTerm}" гэсэн хайлтад тохирох бүтээгдэхүүн олдсонгүй. Өөр түлхүүр үг ашиглан хайж үзнэ үү.`
+              : "Одоогоор бүтээгдэхүүн байхгүй байна. Удахгүй шинэ бүтээгдэхүүнүүд нэмэгдэх болно."}
           </p>
+          {searchTerm && (
+            <Button
+              variant="outline"
+              onClick={() => setSearchTerm("")}
+              className="mt-4 rounded-lg px-6 py-2"
+            >
+              Бүх бүтээгдэхүүн харах
+            </Button>
+          )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
           {filteredProducts.map((product) => {
             const primaryImage =
               product.images && product.images.length > 0
@@ -147,10 +189,10 @@ export default function ProductsPage() {
             return (
               <Card
                 key={product.id}
-                className="group flex flex-col overflow-hidden transition-all duration-300 hover:shadow-lg"
+                className="group flex flex-col overflow-hidden rounded-xl border-0 bg-white shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <CardContent className="flex-grow p-4 pb-2">
-                  <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-md">
+                <CardContent className="flex-grow p-3 pb-2 sm:p-4 sm:pb-2">
+                  <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-lg sm:mb-4">
                     <Image
                       src={imageUrl}
                       alt={imageAlt}
@@ -161,29 +203,34 @@ export default function ProductsPage() {
                     />
                   </div>
                   <h2
-                    className="mb-1 line-clamp-2 h-14 text-lg font-semibold"
+                    className="mb-2 line-clamp-2 h-12 text-base font-semibold text-gray-900 sm:h-14 sm:text-lg"
                     title={product.title}
                   >
                     {product.title}
                   </h2>
-                  <p className="mb-3 line-clamp-3 h-[60px] text-sm text-gray-600">
-                    {product.description}
+                  <p className="mb-3 line-clamp-2 h-10 text-xs text-gray-600 sm:line-clamp-3 sm:h-[60px] sm:text-sm">
+                    {product.description.slice(0, 116)}...
                   </p>
-                  <div className="mb-3 flex items-baseline">
-                    <span className="text-xl font-bold text-primary">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="text-lg font-bold text-primary sm:text-xl">
                       {product.price >= 1_000_000
                         ? `₮${(product.price / 1_000_000).toFixed(1)} сая`
-                        : `₮${(product.price / 1_000).toFixed(0)} мян`}{" "}
+                        : `₮${(product.price / 1_000).toFixed(0)} мян`}
                     </span>
+                    {product.originalPrice && product.originalPrice > product.price && (
+                      <span className="text-xs text-gray-500 line-through sm:text-sm">
+                        ₮{(product.originalPrice / 1_000).toFixed(0)} мян
+                      </span>
+                    )}
                   </div>
                 </CardContent>
-                <CardFooter className="mt-auto p-4 pt-0">
+                <CardFooter className="mt-auto p-3 pt-0 sm:p-4 sm:pt-0">
                   <Button
                     variant="default"
                     asChild
-                    className="w-full rounded-md bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
+                    className="w-full rounded-lg bg-primary py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:py-3 sm:text-base"
                   >
-                    <Link href={`/products/${product.id}`}>Дэлгэрэнгүй</Link>
+                    <Link href={`/products/${product.id}`}>Дэлгэрэнгүй үзэх</Link>
                   </Button>
                 </CardFooter>
               </Card>

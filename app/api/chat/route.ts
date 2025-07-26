@@ -1,75 +1,58 @@
-import { NextResponse } from "next/server";
-import OpenAI from "openai";
+import { cookies } from "next/headers"
+import { NextResponse } from "next/server"
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Ensure your API key is set in environment variables
-});
-
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { productTitle, productDescription } = await req.json();
+    const { username, password } = await request.json()
 
-    if (!productTitle) {
+    if (!username || !password) {
       return NextResponse.json(
-        { error: "productTitle is required" },
+        { error: "Username and password are required" },
         { status: 400 }
-      );
+      )
     }
 
-    const prompt = `
-For the product named "${productTitle}", product description is "${productDescription}", please generate:
-1. A concise and appealing product description.
-2. A comma-separated list of key specifications.
+    // Check against environment variables
+    const adminUsername = process.env.ADMIN_USERNAME || "admin"
+    const adminPassword = process.env.ADMIN_PASSWORD || "admin"
 
-Return the output as a JSON object with two keys: "description" and "specs".
-For example:
-{
-  "description": "This is an amazing product that will change your life in mongolian language...",
-  "specs": "Spec1, Spec2, Spec3, Another Spec"
-}
-    `;
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful assistant that generates product details in mongolian language.",
-        },
-        { role: "user", content: prompt },
-      ],
-      response_format: { type: "json_object" }, // Request JSON output
-    });
-
-    const content = response.choices[0]?.message?.content;
-
-    if (!content) {
+    if (!adminUsername || !adminPassword) {
+      console.error("Admin credentials not configured in environment variables")
       return NextResponse.json(
-        { error: "Failed to get content from OpenAI" },
+        { error: "Server configuration error" },
         { status: 500 }
-      );
+      )
     }
 
-    // Attempt to parse the content, as OpenAI should return a JSON string
-    // when response_format: { type: "json_object" } is used.
-    try {
-      const parsedContent = JSON.parse(content);
-      return NextResponse.json(parsedContent);
-    } catch (parseError) {
-      console.error("Error parsing OpenAI response:", parseError);
-      console.error("Raw OpenAI response content:", content);
+    if (username !== adminUsername || password !== adminPassword) {
+      // Clear cookie on failed login attempt if it exists
+      const cookieStore = await cookies()
+      cookieStore.delete("admin-auth")
       return NextResponse.json(
-        { error: "Failed to parse AI-generated content. Raw content: " + content },
-        { status: 500 }
-      );
+        { error: "Invalid credentials" },
+        { status: 401 }
+      )
     }
 
-  } catch (error: unknown) {
-    console.error("Error in API route:", error);
-    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    // Set cookie on successful login
+      const cookieStore = await cookies()
+    cookieStore.set("admin-auth", "true", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/", // Cookie accessible for all paths
+      maxAge: 60 * 60 * 24, // 1 day
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("Login error:", error)
+    // Clear cookie on error if it exists
+      const cookieStore = await cookies()
+    cookieStore.delete("admin-auth")
     return NextResponse.json(
-      { error: errorMessage },
+      { error: "Internal server error" },
       { status: 500 }
-    );
+    )
   }
 }
+
