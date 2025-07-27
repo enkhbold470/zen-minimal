@@ -10,7 +10,7 @@ import Navigation from "@/components/Navigation"
 import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 
-const roboto = Roboto({ weight: ["300"], subsets: ["cyrillic", "latin"] })
+const roboto = Roboto({ weight: ["300", "400", "500", "700"], subsets: ["cyrillic", "latin"] })
 
 export const metadata: Metadata = {
   title: {

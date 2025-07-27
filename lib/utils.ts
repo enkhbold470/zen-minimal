@@ -28,6 +28,14 @@ export interface PriceCalculation {
 }
 
 
+export function firstSentenceDetector(string: string) {
+  const firstPeriodIndex = string.indexOf('.');
+  if (firstPeriodIndex !== -1) {
+    return string.substring(0, firstPeriodIndex + 1);
+  }
+  return string;
+}
+
 // Utility function to shuffle an array
 export function shuffleArray<T>(array: T[]): T[] {
   for (let i = array.length - 1; i > 0; i--) {

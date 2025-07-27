@@ -34,10 +34,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import ShareButtons from "@/components/shareButtons"
 import { getPublishedLaptops } from "@/app/actions"
 import Breadcrumb from "@/components/Breadcrumb"
+import { shuffleArray } from "@/lib/utils"
+import Link from "next/link"
+import OtherProducts from "./otherProducs"
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -405,6 +409,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           </Form>
         </DialogContent>
       </Dialog>
+
+      <div className="mt-8 sm:mt-12">
+        <h2 className="mb-4 text-2xl font-bold sm:text-3xl">Бусад бүтээгдэхүүнүүд</h2>
+        <OtherProducts products={products} />
+      </div>
     </div>
   )
 }

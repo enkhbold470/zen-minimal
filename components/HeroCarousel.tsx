@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { firstSentenceDetector } from '@/lib/utils'
 
 type Product = {
   id: number
@@ -51,10 +52,10 @@ export default function HeroCarousel({ featuredProducts }: HeroCarouselProps) {
             {currentProduct.title}
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
-            {currentProduct.description}
+            {firstSentenceDetector(currentProduct.description)}     
           </p>
           <Button asChild size="lg" variant="secondary" className="rounded-full text-lg px-8 py-6">
-            <Link href="/products">Дэлгүүрт Зочлох</Link>
+            <Link href={`/products/${currentProduct.id}`}>Худалдаж Авах</Link>
           </Button>
         </div>
       </div>
