@@ -11,7 +11,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { getPublishedLaptops } from "@/app/actions"
 import Breadcrumb from "@/components/Breadcrumb"
-import { commafy } from "@/lib/utils"
+import { commafy, shuffleArray } from "@/lib/utils"
 export default function ProductsPage() {
   const [products, setProducts] = useState<Laptop[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -30,7 +30,8 @@ export default function ProductsPage() {
           return
         }
 
-        setProducts(data as Laptop[])
+        // Shuffle the products before setting them
+        setProducts(shuffleArray(data as Laptop[]))
         setError(null)
       } catch (error) {
         setProducts([])

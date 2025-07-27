@@ -12,6 +12,7 @@ const RECYCLE_FEE = 5 // 5% recycle fee
 const COMMISSION_FEE = 0.1 // 10% commission fee
 const SHIPPING_FEE = 20 // $20 shipping fee
 
+
 // Price calculation interface
 export interface PriceCalculation {
   basePrice: number
@@ -25,6 +26,19 @@ export interface PriceCalculation {
   discountPercentage: number
   finalPriceMNT: number
 }
+
+
+// Utility function to shuffle an array
+export function shuffleArray<T>(array: T[]): T[] {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+
+
 
 // Calculate price from USD to MNT with all fees
 export const calculatePriceFromUSD = (basePriceUSD: number): PriceCalculation => {
