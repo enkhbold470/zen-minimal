@@ -4,12 +4,12 @@ import { getPublishedLaptops } from "@/app/actions"
 import { Button } from "@/components/ui/button"
 import { CometCard } from "@/components/ui/comet-card"
 import { CardContent, CardFooter } from "@/components/ui/card"
-import { commafy } from "@/lib/utils"
+import { commafy, shuffleArray } from "@/lib/utils"
 import HeroCarousel from "@/components/HeroCarousel"
 
 export default async function Home() {
   const products = await getPublishedLaptops()
-  const featuredProducts = products.slice(4,8)
+  const featuredProducts = shuffleArray(products).slice(0,4)
 
   return (
     <div className="min-h-screen bg-background pt-2 md:pt-0">
