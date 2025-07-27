@@ -214,7 +214,7 @@ export default function ProductsPage() {
                   </p>
                   <div className="my-3 flex items-center justify-between">
                     <span className="text-lg font-bold text-primary sm:text-xl">
-                      {commafy(Math.round(product.price / 100) * 100)}
+                      {commafy(Math.round(product.price / 100) * 100)} ₮
                     </span>
                     {/* {product.originalPrice && product.originalPrice > product.price && (
                       <span className="text-xs text-gray-500 line-through sm:text-sm">
