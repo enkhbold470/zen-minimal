@@ -106,7 +106,7 @@ export default function ProductsPage() {
         <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
           <div className="text-center sm:text-left">
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">Манай Дэлгүүрт</h1>
-            <p className="mt-1 text-sm text-gray-600 sm:text-base">Чанартай лаптоп компьютерүүд</p>
+            <p className="mt-1 text-sm text-gray-600 sm:text-base">Бүтээгдэхүүнүүдийн жагсаалт</p>
           </div>
           <div className="relative w-full sm:w-80 lg:w-96">
             <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
@@ -140,7 +140,7 @@ export default function ProductsPage() {
       <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <div className="text-center sm:text-left">
           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">Манай Дэлгүүрт</h1>
-          <p className="mt-1 text-sm text-gray-600 sm:text-base">Чанартай лаптоп компьютерүүд</p>
+          <p className="mt-1 text-sm text-gray-600 sm:text-base">Бүтээгдэхүүнүүдийн жагсаалт</p>
         </div>
         <div className="relative w-full sm:w-80 lg:w-96">
           <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
