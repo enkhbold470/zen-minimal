@@ -155,8 +155,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
       }
 
       toast({
-        title: `Хүсэлт илгээгдлээ ${product?.title}!`,
-        description: `Баярлалаа, ${values.username}. Бид удахгүй тантай холбогдох болно.`,
+        title: "✅ Захиалга баталгаажлаа!",
+        description: `Баярлалаа, ${values.username}. Дэлгэрэнгүй мэдээллийг и-мэйлээр илгээнэ. И-мэйлээ шалгана уу. 📧`,
         variant: "default",
       })
       setIsSubscribed(true)

@@ -75,5 +75,32 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Error sending email" }, { status: 500 });
   }
 
+  // Notify admin about the new order (non-blocking for user)
+  try {
+    const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || 'zen@enk.icu'
+    const adminMail: MailOptions = {
+      from: process.env.ZOHO_USER as string,
+      to: adminEmail,
+      subject: `Шинэ захиалга ирлээ: ${laptopChoice}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+          <h2 style="font-size: 20px; color: #111; margin-bottom: 16px;">Шинэ захиалга ирлээ</h2>
+          <p style="font-size: 14px; margin: 0 0 8px;"><strong>Хэрэглэгч:</strong> ${username}</p>
+          <p style="font-size: 14px; margin: 0 0 8px;"><strong>Утас:</strong> ${phoneNumber}</p>
+          <p style="font-size: 14px; margin: 0 0 8px;"><strong>И-мэйл:</strong> ${email}</p>
+          <p style="font-size: 14px; margin: 0 0 8px;"><strong>Бүтээгдэхүүн:</strong> ${laptopChoice}</p>
+          ${productLink ? `<p style="font-size: 14px; margin: 0 0 8px;"><strong>Линк:</strong> <a href="${productLink}">${productLink}</a></p>` : ''}
+          <hr style="margin: 16px 0; border: none; border-top: 1px solid #eee;"/>
+          <p style="font-size: 12px; color: #555;">Энэ бол системээс илгээгдсэн мэдэгдэл.</p>
+        </div>
+      `,
+    }
+    await transporter.sendMail(adminMail)
+    console.log('Admin notification sent to:', adminEmail)
+  } catch (e) {
+    console.error('Failed to send admin notification email:', e)
+    // Do not fail the request if admin notification fails
+  }
+
   return NextResponse.json({ message: "Success" });
 }
