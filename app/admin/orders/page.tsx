@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { Order } from '@prisma/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AdminNavbar from '@/app/admin/adminNavbar';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -40,7 +39,6 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <AdminNavbar />
       <div className="container mx-auto py-8">
         <Card>
           <CardHeader>

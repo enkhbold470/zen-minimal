@@ -21,7 +21,6 @@ import { Input } from "@/components/ui/input" // Import Input component
 import { getAdminLaptops, toggleLaptopPublishedStatus } from "@/app/actions" // Import toggleLaptopPublishedStatus, use getAdminLaptops
 
 import { DeleteLaptopButton } from "./delete-button"
-import Breadcrumb from "@/components/Breadcrumb"
 
 export default function LaptopsAdminPage() {
   const [laptops, setLaptops] = useState<Laptop[]>([])
@@ -88,12 +87,7 @@ export default function LaptopsAdminPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <Breadcrumb
-        items={[
-          { label: "Админ", href: "/admin" },
-          { label: "Лаптопууд" }
-        ]}
-      />
+   
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div className="mb-4 sm:mb-0">
           <h1 className="text-3xl font-bold">Manage Laptops</h1>

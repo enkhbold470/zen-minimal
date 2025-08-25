@@ -158,35 +158,54 @@ export function AddLaptopForm() {
   }
 
   const handleGenerateWithAI = async () => {
-    if (!formRef.current) return
+    console.log("[FRONTEND] handleGenerateWithAI called")
+    
+    if (!formRef.current) {
+      console.log("[FRONTEND] No form ref, returning")
+      return
+    }
+    
     const titleInput = formRef.current.elements.namedItem(
       "title"
     ) as HTMLInputElement
     const productTitle = titleInput?.value
+    
+    console.log("[FRONTEND] Product title from input:", productTitle)
 
     if (!productTitle?.trim()) {
+      console.log("[FRONTEND] No product title provided")
       setAiError("Please enter a product title first.")
       return
     }
 
     setIsGenerating(true)
     setAiError(null)
+    
+    console.log("[FRONTEND] Starting AI generation for:", productTitle)
 
     try {
+      const requestBody = { productTitle }
+      console.log("[FRONTEND] Request body:", JSON.stringify(requestBody, null, 2))
+      
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productTitle }),
+        body: JSON.stringify(requestBody),
       })
+      
+      console.log("[FRONTEND] Response status:", response.status)
+      console.log("[FRONTEND] Response ok:", response.ok)
 
       if (!response.ok) {
         const errorData = await response.json()
+        console.log("[FRONTEND] Error response data:", JSON.stringify(errorData, null, 2))
         throw new Error(
           errorData.error || `API request failed with status ${response.status}`
         )
       }
 
       const data = await response.json()
+      console.log("[FRONTEND] Success response data:", JSON.stringify(data, null, 2))
 
       if (formRef.current) {
         const descriptionTextarea = formRef.current.elements.namedItem(
@@ -196,23 +215,35 @@ export function AddLaptopForm() {
           "specs"
         ) as HTMLInputElement
 
+        console.log("[FRONTEND] Found description textarea:", !!descriptionTextarea)
+        console.log("[FRONTEND] Found specs input:", !!specsInput)
+        console.log("[FRONTEND] Data has description:", !!data.description)
+        console.log("[FRONTEND] Data has specs:", !!data.specs)
+
         if (descriptionTextarea && data.description) {
           descriptionTextarea.value = data.description
+          console.log("[FRONTEND] Set description value")
         }
         if (specsInput && data.specs) {
           specsInput.value = data.specs
+          console.log("[FRONTEND] Set specs value")
         }
       }
       if (!data.description && !data.specs) {
+        console.log("[FRONTEND] No description or specs in response")
         setAiError(
           "AI did not return description or specs. Raw: " + JSON.stringify(data)
         )
+      } else {
+        console.log("[FRONTEND] AI generation completed successfully")
       }
     } catch (error: unknown) {
-      console.error("AI generation error:", error)
+      console.error("[FRONTEND] AI generation error:", error)
+      console.error("[FRONTEND] Error details:", error instanceof Error ? error.stack : 'No stack trace')
       setAiError(error instanceof Error ? error.message : "Failed to generate content.")
     } finally {
       setIsGenerating(false)
+      console.log("[FRONTEND] AI generation process finished")
     }
   }
 
