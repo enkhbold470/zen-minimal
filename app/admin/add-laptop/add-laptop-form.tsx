@@ -225,7 +225,15 @@ export function AddLaptopForm() {
           console.log("[FRONTEND] Set description value")
         }
         if (specsInput && data.specs) {
-          specsInput.value = data.specs
+          // Convert specs object to string format if it's an object
+          let specsString = data.specs
+          if (typeof data.specs === 'object' && data.specs !== null) {
+            specsString = Object.entries(data.specs)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join(', ')
+            console.log("[FRONTEND] Converted specs object to string:", specsString)
+          }
+          specsInput.value = specsString
           console.log("[FRONTEND] Set specs value")
         }
       }
