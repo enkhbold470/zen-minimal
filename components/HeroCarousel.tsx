@@ -12,7 +12,9 @@ type Product = {
   title: string
   description: string
   price: number
-  images: { url: string }[]
+  Image: { url: string }[]
+  published: boolean
+  datePublished: Date
 }
 
 type HeroCarouselProps = {
@@ -30,7 +32,9 @@ export default function HeroCarousel({ featuredProducts }: HeroCarouselProps) {
     return () => clearInterval(timer)
   }, [featuredProducts.length])
 
-  const currentProduct = featuredProducts[currentIndex]
+  const filteredProducts = featuredProducts.filter(product => product.published)
+
+  const currentProduct = filteredProducts[currentIndex]
 
   return (
     <motion.section
@@ -40,8 +44,8 @@ export default function HeroCarousel({ featuredProducts }: HeroCarouselProps) {
       className="relative h-screen overflow-hidden"
     > 
       <Image
-        src={currentProduct.images[0]?.url || `https://placekeanu.com/1920/1080`}
-        alt={currentProduct.title}
+        src={currentProduct?.Image[0]?.url || `https://placekeanu.com/1920/1080`}
+        alt={currentProduct?.title || `Product ${currentProduct?.id}`}
         fill
         className="object-cover brightness-75"
         priority
@@ -49,13 +53,13 @@ export default function HeroCarousel({ featuredProducts }: HeroCarouselProps) {
       <div className="absolute inset-0 flex items-center justify-center bg-black/40">
         <div className="text-center text-white px-4">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">
-            {currentProduct.title}
+            {currentProduct?.title || `Product ${currentProduct?.id}`}
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
-            {firstSentenceDetector(currentProduct.description)}     
+            {firstSentenceDetector(currentProduct?.description || `Product ${currentProduct?.id}`)}     
           </p>
           <Button asChild size="lg" variant="secondary" className="rounded-full text-lg px-8 py-6">
-            <Link href={`/products/${currentProduct.id}`}>Худалдаж Авах</Link>
+            <Link href={`/products/${currentProduct?.id}`}>Худалдаж Авах</Link>
           </Button>
         </div>
       </div>

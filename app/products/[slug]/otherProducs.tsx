@@ -18,8 +18,8 @@ export default function OtherProducts({ products }: { products: Laptop[] }) {
                   <CardContent className="flex-grow p-3 pb-2 sm:p-4 sm:pb-2">
                     <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-lg sm:mb-4">
                       <Image
-                        src={product.images[0].url}
-                        alt={product.images[0].alt || product.title}      
+                        src={product.Image[0].url}
+                        alt={product.Image[0].alt || product.title}      
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       priority={true}

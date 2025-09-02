@@ -192,7 +192,7 @@ export async function getAdminLaptops() {
   try {
     return await prisma.laptop.findMany({
       orderBy: { id: 'desc' },
-      include: { images: { orderBy: { position: 'asc' } } },
+      include: { Image: { orderBy: { position: 'asc' } } },
     });
   } catch (error) {
     console.error('Error getting laptops:', error);
@@ -206,7 +206,7 @@ export async function getPublishedLaptops() {
     return await prisma.laptop.findMany({
       where: { published: true },
       orderBy: { datePublished: 'desc' },
-      include: { images: { orderBy: { position: 'asc' } } },
+      include: { Image: { orderBy: { position: 'asc' } } },
     });
   } catch (error) {
     console.error('Error getting published laptops:', error);
@@ -219,7 +219,7 @@ export async function getLaptopById(id: number) {
   try {
     return await prisma.laptop.findUnique({
       where: { id },
-      include: { images: { orderBy: { position: 'asc' } } },
+      include: { Image: { orderBy: { position: 'asc' } } },     
     });
   } catch (error) {
     console.error('Error getting laptop by ID:', error);

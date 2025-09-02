@@ -115,8 +115,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   useEffect(() => {
     if (product) {
       setSelectedImage(
-        product.images && product.images.length > 0
-          ? product.images[0].url
+        product.Image && product.Image.length > 0
+          ? product.Image[0].url
           : "/logo.svg"
       )
       form.setValue("laptopChoice", product.title || "")
@@ -214,9 +214,9 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 priority
               />
             </div>
-            {product.images && product.images.length > 1 && (
+            {product.Image && product.Image.length > 1 && (
               <div className="grid grid-cols-4 gap-2 sm:gap-3">
-                {product.images.map((image) => (
+                {product.Image.map((image) => (
                   <div
                     key={image.id}
                     className={`aspect-square cursor-pointer overflow-hidden rounded-lg border-2 transition-all duration-200 ${

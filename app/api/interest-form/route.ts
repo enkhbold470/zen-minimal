@@ -16,11 +16,13 @@ export async function POST(req: Request) {
   try {
     await prisma.order.create({
       data: {
+        status: 'pending',
         username,
         laptopChoice,
         phoneNumber,
         email,
-        productLink,
+        productLink: productLink || null,
+        notes: '',
       },
     });
   } catch (error) {

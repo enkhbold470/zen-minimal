@@ -164,11 +164,11 @@ export default function LaptopsAdminPage() {
                 <CardDescription>₮{commafy(laptop.price)}</CardDescription>
               </CardHeader>
               <CardContent className="flex-grow p-4 pt-0">
-                {laptop.images && laptop.images.length > 0 ? (
+                {laptop.Image && laptop.Image.length > 0 ? (
                   <div className="relative mb-3 aspect-video w-full overflow-hidden rounded-md">
                     <Image
-                      src={laptop.images[0].url}
-                      alt={laptop.images[0].alt || laptop.title}
+                      src={laptop.Image[0].url}
+                      alt={laptop.Image[0].alt || laptop.title}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />

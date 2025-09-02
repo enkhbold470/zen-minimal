@@ -177,8 +177,8 @@ export default function ProductsPage() {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4 xl:grid-cols-5">
           {filteredProducts.map((product) => {
             const primaryImage =
-              product.images && product.images.length > 0
-                ? product.images[0]
+              product.Image && product.Image.length > 0
+                ? product.Image[0]
                 : null
             const imageUrl = primaryImage
               ? primaryImage.url

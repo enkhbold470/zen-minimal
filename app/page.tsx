@@ -29,7 +29,7 @@ export default async function Home() {
                 <div className="mx-2 flex-1">
                   <div className="relative mt-2 aspect-[3/4] w-full">
                     <Image
-                      src={product.images[0]?.url || `https://placekeanu.com/400/300`}
+                      src={product.Image[0]?.url || `https://placekeanu.com/400/300`}
                       alt={product.title}
                       fill
                       className="absolute inset-0 h-full w-full rounded-[16px] bg-[#000000] object-cover contrast-75"

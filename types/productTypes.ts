@@ -14,7 +14,7 @@ export interface Laptop {
   price: number;
   originalPrice: number;
   discount?: string | null;
-  images: ImageItem[];
+  Image: ImageItem[];
   videoUrl?: string | null;
   datePublished: Date;
 }

@@ -3,20 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
 }
-
-/// This table has subclasses and requires additional setup for migrations. Visit https://pris.ly/d/table-inheritance for more info.
-model tenants {
-  id         String    @id @default(dbgenerated("public.uuid_generate_v7()")) @db.Uuid
-  name       String?
-  created    DateTime  @default(dbgenerated("LOCALTIMESTAMP")) @db.Timestamp(6)
-  updated    DateTime  @default(dbgenerated("LOCALTIMESTAMP")) @db.Timestamp(6)
-  deleted    DateTime? @db.Timestamp(6)
-  compute_id String?   @db.Uuid
-}
-
 
 model Laptop {
   id            Int      @id @default(autoincrement())
@@ -27,18 +16,18 @@ model Laptop {
   price         Float
   originalPrice Float?
   discount      String?
-  videoUrl      String?  // YouTube video URL
+  videoUrl      String?
   datePublished DateTime @default(now())
-  images        Image[]  // Relationship to images
+  Image         Image[]
 }
 
 model Image {
   id       Int     @id @default(autoincrement())
   url      String
   alt      String?
-  position Int     @default(0) // For image ordering
+  position Int     @default(0)
   laptopId Int
-  laptop   Laptop  @relation(fields: [laptopId], references: [id], onDelete: Cascade)
+  Laptop   Laptop  @relation(fields: [laptopId], references: [id], onDelete: Cascade)
 }
 
 model Order {
@@ -47,6 +36,9 @@ model Order {
   laptopChoice String
   phoneNumber  String
   email        String
-  productLink  String?
+  status       String?
+  notes        String?
   createdAt    DateTime @default(now())
+  updatedAt    DateTime?
+  productLink  String?
 }
