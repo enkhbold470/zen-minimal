@@ -16,7 +16,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
   const [newImageFiles, setNewImageFiles] = useState<File[]>([])
   const [newImagePreviews, setNewImagePreviews] = useState<string[]>([])
   const [existingImages, setExistingImages] = useState<ImageItem[]>(
-    laptop.images
+    laptop.Image
   )
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState("")
@@ -274,7 +274,7 @@ export function EditLaptopForm({ laptop }: EditLaptopFormProps) {
               id="originalPrice"
               step="0.01"
               required
-              defaultValue={laptop.originalPrice}
+              defaultValue={laptop.originalPrice ?? ''}
               className={commonInputClass}
             />
           </div>

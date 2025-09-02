@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 
-import { EditLaptopPageProps, Laptop } from "@/types/productTypes"
+import { EditLaptopFormProps, EditLaptopPageProps, Laptop } from "@/types/productTypes"
 import { getLaptopById } from "@/app/actions/laptopActions"
 import Breadcrumb from "@/components/Breadcrumb"
 
@@ -27,7 +27,7 @@ export default async function EditLaptopPage({ params }: EditLaptopPageProps) {
         </p>
       </div>
 
-      <EditLaptopForm laptop={laptop as unknown as Laptop} />
+      <EditLaptopForm laptop={laptop} />
     </div>
   )
 }

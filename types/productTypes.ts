@@ -12,7 +12,7 @@ export interface Laptop {
   description: string;
   specs: string[];
   price: number;
-  originalPrice: number;
+  originalPrice: number | null;
   discount?: string | null;
   Image: ImageItem[];
   videoUrl?: string | null;
@@ -54,7 +54,5 @@ export interface DeleteLaptopButtonProps {
 
 
 export interface EditLaptopFormProps {
-  laptop: Laptop & {
-    images: ImageItem[]
-  }
+  laptop: Laptop
 }
