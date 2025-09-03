@@ -12,7 +12,7 @@ export const LaptopSchema = z.object({
     if (!val || val.trim() === '') return [];
     return val.split('\n').map(url => url.trim()).filter(url => url.length > 0);
   }),
-  images: z.preprocess(
+  Image: z.preprocess(
     (arg) => {
       // If formData.getAll('images') is used, arg is File[].
       // If formData.get('images') is used and only one file, arg is File.
@@ -35,11 +35,11 @@ export const LaptopSchema = z.object({
   .refine(files => files.every(file => file.size < 4 * 1024 * 1024), 'Each image must be less than 4MB.')
 })
 .refine(data => {
-  const hasFiles = data.images.length > 0;
+  const hasFiles = data.Image.length > 0;
   const hasUrls = data.imageUrls.length > 0;
   return hasFiles || hasUrls;
 }, {
   message: 'At least one image (file upload or URL) is required.',
-  path: ['images']
+  path: ['Image']
 });
 

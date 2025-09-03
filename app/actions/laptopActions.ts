@@ -17,7 +17,7 @@ export async function createLaptop(prevState: CreateLaptopState, formData: FormD
     discount: formData.get('discount'),
     videoUrl: formData.get('videoUrl'),
     imageUrls: formData.get('imageUrls'),
-    images: formData.getAll('images'),
+    Image: formData.getAll('Image'),
   });
 
   if (!validatedFields.success) {
@@ -28,7 +28,7 @@ export async function createLaptop(prevState: CreateLaptopState, formData: FormD
     };
   }
 
-  const { images, imageUrls, ...laptopData } = validatedFields.data;
+  const { Image, imageUrls, ...laptopData } = validatedFields.data; 
 
   try {
     // First create the laptop without images
@@ -56,8 +56,8 @@ export async function createLaptop(prevState: CreateLaptopState, formData: FormD
     }
 
     // Process uploaded files
-    if (images.length > 0) {
-      const filePromises = images.map(async (image: File, index: number) => {
+    if (Image.length > 0) {
+      const filePromises = Image.map(async (image: File, index: number) => {  
         const blob = await put(`laptops/${newLaptop.id}/${image.name}`, image, {
           access: 'public',
           contentType: image.type,

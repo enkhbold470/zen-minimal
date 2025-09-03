@@ -42,7 +42,7 @@ export function DeleteLaptopButton({ id }: DeleteLaptopButtonProps) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" size="sm" className="gap-1">
+        <Button variant="destructive" size="sm" className="gap-1 text-white">
           <Trash2 className="h-4 w-4" />
           Delete
         </Button>
@@ -60,7 +60,7 @@ export function DeleteLaptopButton({ id }: DeleteLaptopButtonProps) {
           <AlertDialogAction
             onClick={handleDelete}
             disabled={isDeleting}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-destructive text-white hover:bg-destructive/90"
           >
             {isDeleting ? "Deleting..." : "Delete"}
           </AlertDialogAction>
