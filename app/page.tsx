@@ -13,9 +13,9 @@ export const dynamic = 'force-dynamic'
 
 export default async function Home() {
   const products = await getPublishedLaptops()
-  console.log(products)
+  // console.log(products)
   const featuredProducts = shuffleArray(products).slice(0,4)
-  console.log(featuredProducts)
+  // console.log(featuredProducts)
 
   return (
     <div className="min-h-screen bg-background pt-2 md:pt-0">
