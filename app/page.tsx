@@ -7,9 +7,15 @@ import { CardContent, CardFooter } from "@/components/ui/card"
 import { commafy, shuffleArray } from "@/lib/utils"
 import HeroCarousel from "@/components/HeroCarousel"
 
+// Force dynamic rendering - prevents Vercel from caching this page
+// This ensures the shuffle logic runs fresh on every request
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
   const products = await getPublishedLaptops()
+  console.log(products)
   const featuredProducts = shuffleArray(products).slice(0,4)
+  console.log(featuredProducts)
 
   return (
     <div className="min-h-screen bg-background pt-2 md:pt-0">
